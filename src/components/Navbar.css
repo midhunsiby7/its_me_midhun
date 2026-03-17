@@ -163,7 +163,7 @@
     padding: 1rem;
 
     /* Glassmorphism Card Effect */
-    background: rgba(20, 20, 30, 0.45);
+    background: rgba(15, 15, 25, 0.85);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.12);
