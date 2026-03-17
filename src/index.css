@@ -1,11 +1,13 @@
 /* ===== DESIGN SYSTEM ===== */
 :root {
   /* Colors */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111118;
+  --bg-primary: #050510;
+  --bg-secondary: #0a0a1a;
   --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.06);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --border-glass-hover: rgba(255, 255, 255, 0.18);
 
   --text-primary: #f0f0f5;
   --text-secondary: rgba(240, 240, 245, 0.65);
@@ -27,14 +29,13 @@
   --font-heading: 'Outfit', 'Inter', sans-serif;
 
   /* Spacing */
-  --section-padding: clamp(4rem, 10vh, 8rem) clamp(1.5rem, 5vw, 6rem);
   --container-max: 1200px;
 
   /* Effects */
   --glass-blur: blur(20px);
   --glass-blur-heavy: blur(40px);
   --shadow-glow: 0 0 60px rgba(139, 92, 246, 0.15);
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   /* Transitions */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -54,7 +55,6 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
 }
 
 body {
@@ -90,7 +90,6 @@ img {
 
 /* ===== UTILITY CLASSES ===== */
 
-/* Gradient text */
 .gradient-text {
   background: var(--gradient-text);
   -webkit-background-clip: text;
@@ -98,16 +97,22 @@ img {
   background-clip: text;
 }
 
-/* Glassmorphism card */
 .glass-card {
   background: var(--bg-glass);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-glass);
-  border-radius: 16px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-base);
 }
 
-/* Section heading */
+.glass-card:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-glass-hover);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 .section-label {
   font-family: var(--font-body);
   font-size: 0.85rem;
@@ -128,13 +133,42 @@ img {
   max-width: var(--container-max);
   margin: 0 auto;
   width: 100%;
+  padding: 0 clamp(1.5rem, 5vw, 4rem);
 }
 
-/* ===== SCROLL REVEAL ANIMATIONS ===== */
+/* ===== PAGE TRANSITION ===== */
+.page-wrapper {
+  position: fixed;
+  inset: 0;
+  top: 70px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.page-content {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  min-height: calc(100vh - 70px);
+  padding-bottom: 3rem;
+}
+
+.page-content.page-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.page-content.page-exit {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.98);
+  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+}
+
+/* ===== SCROLL REVEAL ===== */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+  transform: translateY(30px);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
 }
 
 .reveal.revealed {
@@ -142,32 +176,10 @@ img {
   transform: translateY(0);
 }
 
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-60px);
-  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
-}
-
-.reveal-left.revealed {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-right {
-  opacity: 0;
-  transform: translateX(60px);
-  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
-}
-
-.reveal-right.revealed {
-  opacity: 1;
-  transform: translateX(0);
-}
-
 .reveal-scale {
   opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+  transform: scale(0.9);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
 }
 
 .reveal-scale.revealed {
@@ -175,7 +187,6 @@ img {
   transform: scale(1);
 }
 
-/* Staggered delays */
 .delay-1 { transition-delay: 0.1s; }
 .delay-2 { transition-delay: 0.2s; }
 .delay-3 { transition-delay: 0.3s; }
@@ -201,24 +212,9 @@ img {
   100% { background-position: 0% 50%; }
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes typewriter {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 @keyframes morph {
@@ -226,33 +222,65 @@ img {
   50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
 }
 
+/* ===== CUSTOM CURSOR ===== */
+.cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.08), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-purple);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  transition: width 0.2s ease, height 0.2s ease;
+}
+
+.cursor-dot.cursor-hover {
+  width: 24px;
+  height: 24px;
+  background: rgba(139, 92, 246, 0.3);
+  border: 2px solid var(--accent-purple);
+}
+
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.25);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
-}
-
-/* ===== RESPONSIVENESS ===== */
-@media (max-width: 768px) {
-  :root {
-    --section-padding: 3rem 1.25rem;
-  }
+  background: rgba(139, 92, 246, 0.45);
 }
 
 /* ===== SELECTION ===== */
 ::selection {
   background: rgba(139, 92, 246, 0.3);
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .cursor-glow, .cursor-dot {
+    display: none;
+  }
 }

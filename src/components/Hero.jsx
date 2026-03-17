@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Hero.css';
 
-function Hero() {
+function Hero({ onNavigate }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -10,12 +10,9 @@ function Hero() {
   }, []);
 
   return (
-    <section id="hero" className={`hero ${loaded ? 'hero--loaded' : ''}`}>
-      {/* Ambient gradient orbs */}
+    <div className={`hero ${loaded ? 'hero--loaded' : ''}`}>
       <div className="hero__orb hero__orb--1"></div>
       <div className="hero__orb hero__orb--2"></div>
-      <div className="hero__orb hero__orb--3"></div>
-      <div className="hero__grid"></div>
 
       <div className="hero__content">
         <p className="hero__greeting">
@@ -28,27 +25,25 @@ function Hero() {
         <div className="hero__tagline">
           <span className="hero__tagline-prefix">{'>'}</span>
           <span className="hero__tagline-text">
-            Developer<span className="hero__tagline-divider">•</span>
-            Programmer<span className="hero__tagline-divider">•</span>
+            Developer<span className="hero__tagline-sep">•</span>
+            Programmer<span className="hero__tagline-sep">•</span>
             Tech Enthusiast
           </span>
           <span className="hero__cursor">|</span>
         </div>
-        <p className="hero__description">
+        <p className="hero__desc">
           Passionate BCA student crafting digital experiences with code,
           exploring the boundaries of technology, physics, and beyond.
         </p>
 
         <div className="hero__actions">
-          <a href="#projects" className="hero__btn hero__btn--primary">
+          <button className="hero__btn hero__btn--primary" onClick={() => onNavigate('projects')}>
             <span>View Projects</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 17L17 7M17 7H7M17 7V17"/>
-            </svg>
-          </a>
-          <a href="#contact" className="hero__btn hero__btn--glass">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+          </button>
+          <button className="hero__btn hero__btn--glass" onClick={() => onNavigate('contact')}>
             <span>Get in Touch</span>
-          </a>
+          </button>
         </div>
 
         <div className="hero__socials">
@@ -66,12 +61,7 @@ function Hero() {
           </a>
         </div>
       </div>
-
-      <div className="hero__scroll">
-        <span>Scroll down</span>
-        <div className="hero__scroll-line"></div>
-      </div>
-    </section>
+    </div>
   );
 }
 

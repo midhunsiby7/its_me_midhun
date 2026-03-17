@@ -1,64 +1,38 @@
-import { useState, useEffect } from 'react';
 import './Navbar.css';
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+function Navbar({ activePage, onNavigate }) {
   const navLinks = [
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Interests', href: '#interests' },
-    { label: 'Contact', href: '#contact' },
+    { id: 'home', label: 'Home' },
+    { id: 'about', label: 'About' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'interests', label: 'Interests' },
   ];
 
-  const handleLinkClick = () => {
-    setMenuOpen(false);
-  };
-
   return (
-    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+    <nav className="navbar">
       <div className="navbar__inner">
-        <a href="#hero" className="navbar__logo">
+        <button className="navbar__logo" onClick={() => onNavigate('home')}>
           <span className="navbar__logo-bracket">&lt;</span>
           <span className="navbar__logo-name">Midhun</span>
           <span className="navbar__logo-bracket">/&gt;</span>
-        </a>
+        </button>
 
-        <div className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
+        <div className="navbar__links">
           {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="navbar__link"
-              onClick={handleLinkClick}
+            <button
+              key={link.id}
+              className={`navbar__link ${activePage === link.id ? 'navbar__link--active' : ''}`}
+              onClick={() => onNavigate(link.id)}
             >
               {link.label}
-            </a>
+              {activePage === link.id && <span className="navbar__link-indicator" />}
+            </button>
           ))}
-          <a href="#contact" className="navbar__cta" onClick={handleLinkClick}>
+          <button className="navbar__cta" onClick={() => onNavigate('contact')}>
             Let's Talk
-          </a>
+          </button>
         </div>
-
-        <button
-          className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--active' : ''}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </div>
     </nav>
   );

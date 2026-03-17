@@ -1,8 +1,10 @@
+import schoolLogo from '../assets/school-logo.png';
+import collegeLogo from '../assets/college-logo.png';
 import './About.css';
 
 function About() {
   return (
-    <section id="about" className="about">
+    <div className="about">
       <div className="section-container">
         <p className="section-label reveal">About Me</p>
         <h2 className="section-title reveal delay-1">
@@ -33,17 +35,27 @@ function About() {
               <div className="about__timeline-item">
                 <div className="about__timeline-dot"></div>
                 <div className="about__timeline-content glass-card">
-                  <span className="about__timeline-year">2023 — Present</span>
-                  <h4>Bachelor of Computer Applications</h4>
-                  <p>BVM Holy Cross College, Cherpunkal</p>
+                  <div className="about__edu-header">
+                    <img src={collegeLogo} alt="BVM Holy Cross College" className="about__edu-logo" />
+                    <div>
+                      <span className="about__timeline-year">2023 — Present</span>
+                      <h4>Bachelor of Computer Applications</h4>
+                      <p>BVM Holy Cross College, Cherpunkal</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="about__timeline-item">
                 <div className="about__timeline-dot"></div>
                 <div className="about__timeline-content glass-card">
-                  <span className="about__timeline-year">Completed</span>
-                  <h4>Higher Secondary & Schooling</h4>
-                  <p>St. Antony's Public School, Anakkal</p>
+                  <div className="about__edu-header">
+                    <img src={schoolLogo} alt="St. Antony's Public School" className="about__edu-logo" />
+                    <div>
+                      <span className="about__timeline-year">Completed</span>
+                      <h4>Higher Secondary & Schooling</h4>
+                      <p>St. Antony's Public School, Anakkal</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -52,11 +64,11 @@ function About() {
 
         <div className="about__traits reveal delay-4">
           {['Adaptive', 'Minimal', 'Confident', 'Risk-taker', 'Problem Solver'].map((trait) => (
-            <span key={trait} className="about__trait">{trait}</span>
+            <span key={trait} className="about__trait glass-card">{trait}</span>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
