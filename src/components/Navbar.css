@@ -127,41 +127,55 @@
 
   .navbar__links {
     position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 70px;
+    right: 1rem;
+    left: auto;
+    bottom: auto;
+    width: 250px;
     flex-direction: column;
     align-items: stretch;
-    gap: 0;
-    background: var(--bg-primary);
-    padding: 1.5rem;
-    transform: translateX(100%);
-    transition: transform 0.35s var(--ease-out-expo);
+    gap: 0.25rem;
+    padding: 1rem;
+    
+    /* Glassmorphism Card Effect */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(32px) saturate(1.4);
+    -webkit-backdrop-filter: blur(32px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    transform-origin: top right;
+    transform: translateY(-15px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s var(--ease-out-expo);
     z-index: 99;
   }
 
   .navbar__links--open {
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .navbar__link {
-    font-size: 1.1rem;
-    padding: 1rem;
+    font-size: 1.05rem;
+    padding: 0.85rem 1rem;
     text-align: left;
-    border-radius: 14px;
+    border-radius: 12px;
   }
 
   .navbar__link--active {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(139, 92, 246, 0.15);
   }
 
   .navbar__indicator { display: none; }
 
   .navbar__cta {
-    margin: 1rem 0 0 0;
+    margin: 0.5rem 0 0 0;
     padding: 0.85rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
     text-align: center;
     border-radius: 14px;
   }
