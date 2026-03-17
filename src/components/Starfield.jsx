@@ -20,24 +20,24 @@ function Starfield() {
 
     const createStars = () => {
       stars = [];
-      const count = Math.floor((canvas.width * canvas.height) / 5000);
+      const count = Math.floor((canvas.width * canvas.height) / 4500);
       for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 1.3 + 0.2,
-          alpha: Math.random() * 0.7 + 0.2,
-          speed: Math.random() * 0.2 + 0.03,
-          twinkleSpeed: Math.random() * 0.008 + 0.003,
+          radius: Math.random() * 1.4 + 0.2,
+          alpha: Math.random() * 0.75 + 0.2,
+          speed: Math.random() * 0.5 + 0.15,  // faster drift
+          twinkleSpeed: Math.random() * 0.012 + 0.005,
           twinkleOffset: Math.random() * Math.PI * 2,
         });
       }
 
-      // Create black hole at a random subtle position
       blackHole = {
-        x: canvas.width * (0.7 + Math.random() * 0.2),
-        y: canvas.height * (0.2 + Math.random() * 0.3),
-        radius: 18,
+        x: canvas.width * (0.72 + Math.random() * 0.15),
+        y: canvas.height * (0.18 + Math.random() * 0.25),
+        radius: 20,
+        rotationAngle: 0,
         pulsePhase: 0,
       };
     };
@@ -47,7 +47,7 @@ function Starfield() {
         canvas.width * 0.15, canvas.height * 0.25, 0,
         canvas.width * 0.15, canvas.height * 0.25, canvas.width * 0.35
       );
-      g1.addColorStop(0, 'rgba(139, 92, 246, 0.025)');
+      g1.addColorStop(0, 'rgba(139, 92, 246, 0.022)');
       g1.addColorStop(1, 'transparent');
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -56,67 +56,94 @@ function Starfield() {
         canvas.width * 0.85, canvas.height * 0.75, 0,
         canvas.width * 0.85, canvas.height * 0.75, canvas.width * 0.3
       );
-      g2.addColorStop(0, 'rgba(59, 130, 246, 0.02)');
+      g2.addColorStop(0, 'rgba(59, 130, 246, 0.018)');
       g2.addColorStop(1, 'transparent');
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
-    // Draw black hole with accretion disk
+    // Realistic black hole with spinning accretion disk
     const drawBlackHole = (time) => {
       if (!blackHole) return;
       const bh = blackHole;
-      bh.pulsePhase += 0.01;
-      const pulse = Math.sin(bh.pulsePhase) * 0.15 + 0.85;
+      bh.pulsePhase += 0.008;
+      bh.rotationAngle += 0.003;
+      const pulse = Math.sin(bh.pulsePhase) * 0.12 + 0.88;
 
-      // Accretion disk rings
-      for (let i = 3; i >= 0; i--) {
-        const ringR = bh.radius + 12 + i * 8;
+      ctx.save();
+      ctx.translate(bh.x, bh.y);
+
+      // Gravitational lensing ring (outermost glow)
+      const lensGrad = ctx.createRadialGradient(0, 0, bh.radius * 2, 0, 0, bh.radius * 4);
+      lensGrad.addColorStop(0, `rgba(139, 92, 246, ${0.03 * pulse})`);
+      lensGrad.addColorStop(0.5, `rgba(236, 72, 153, ${0.015 * pulse})`);
+      lensGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = lensGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, bh.radius * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spinning accretion disk — multiple elliptical rings
+      for (let i = 5; i >= 0; i--) {
+        const ringR = bh.radius + 8 + i * 6;
+        const alpha = (0.035 - i * 0.004) * pulse;
+        const hue = 260 + i * 15; // purple to pink gradient
+
+        ctx.save();
+        ctx.rotate(bh.rotationAngle + i * 0.15);
+
         ctx.beginPath();
-        ctx.ellipse(bh.x, bh.y, ringR, ringR * 0.35, 0.3, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(139, 92, 246, ${0.04 * pulse * (4 - i)})`;
-        ctx.lineWidth = 1.5;
+        ctx.ellipse(0, 0, ringR, ringR * 0.3, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsla(${hue}, 60%, 65%, ${alpha})`;
+        ctx.lineWidth = 1.2 - i * 0.1;
         ctx.stroke();
+
+        ctx.restore();
       }
 
-      // Event horizon
-      const gradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.radius * 2.5);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-      gradient.addColorStop(0.4, 'rgba(5, 5, 16, 0.6)');
-      gradient.addColorStop(0.7, `rgba(139, 92, 246, ${0.08 * pulse})`);
-      gradient.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient;
+      // Photon sphere — bright ring at event horizon
       ctx.beginPath();
-      ctx.arc(bh.x, bh.y, bh.radius * 2.5, 0, Math.PI * 2);
+      ctx.arc(0, 0, bh.radius * 1.2, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(200, 160, 255, ${0.06 * pulse})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Event horizon gradient
+      const ehGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, bh.radius * 2);
+      ehGrad.addColorStop(0, 'rgba(0, 0, 0, 0.92)');
+      ehGrad.addColorStop(0.35, 'rgba(2, 2, 8, 0.75)');
+      ehGrad.addColorStop(0.65, `rgba(60, 30, 120, ${0.06 * pulse})`);
+      ehGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = ehGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, bh.radius * 2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Core
+      // Absolute dark core
       ctx.beginPath();
-      ctx.arc(bh.x, bh.y, bh.radius * 0.6, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+      ctx.arc(0, 0, bh.radius * 0.55, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.97)';
       ctx.fill();
+
+      ctx.restore();
     };
 
-    // Draw subtle tech grid lines
+    // Tech scan lines
     const drawTechElements = (time) => {
-      ctx.strokeStyle = 'rgba(139, 92, 246, 0.015)';
-      ctx.lineWidth = 0.5;
-
-      // Horizontal scan lines (very subtle)
-      const scanY = (time * 30) % canvas.height;
+      const scanY = (time * 35) % canvas.height;
       ctx.beginPath();
       ctx.moveTo(0, scanY);
       ctx.lineTo(canvas.width, scanY);
-      ctx.strokeStyle = `rgba(139, 92, 246, 0.04)`;
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.03)';
+      ctx.lineWidth = 0.5;
       ctx.stroke();
 
-      // Subtle circuit-like dots at grid intersections
-      const gridSize = 120;
+      const gridSize = 140;
       for (let x = gridSize; x < canvas.width; x += gridSize) {
         for (let y = gridSize; y < canvas.height; y += gridSize) {
           const dist = Math.abs(y - scanY);
-          if (dist < 100) {
-            const alpha = (1 - dist / 100) * 0.06;
+          if (dist < 80) {
+            const alpha = (1 - dist / 80) * 0.05;
             ctx.beginPath();
             ctx.arc(x, y, 1, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(139, 92, 246, ${alpha})`;
@@ -126,18 +153,17 @@ function Starfield() {
       }
     };
 
-    // Create comet
     const maybeCreateComet = () => {
-      if (comets.length < 2 && Math.random() < 0.001) {
+      if (comets.length < 2 && Math.random() < 0.0015) {
         const fromLeft = Math.random() > 0.5;
         comets.push({
           x: fromLeft ? -50 : canvas.width + 50,
-          y: Math.random() * canvas.height * 0.5,
-          speedX: (fromLeft ? 1 : -1) * (Math.random() * 2 + 1.5),
-          speedY: Math.random() * 0.8 + 0.3,
-          tailLength: Math.random() * 60 + 40,
-          alpha: 0.6,
-          size: Math.random() * 2 + 1.5,
+          y: Math.random() * canvas.height * 0.4,
+          speedX: (fromLeft ? 1 : -1) * (Math.random() * 2.5 + 1.5),
+          speedY: Math.random() * 0.6 + 0.3,
+          tailLength: Math.random() * 70 + 35,
+          alpha: 0.5,
+          size: Math.random() * 2 + 1.2,
         });
       }
     };
@@ -151,9 +177,9 @@ function Starfield() {
       drawTechElements(time);
       drawBlackHole(time);
 
-      // Stars
+      // Stars — faster movement
       stars.forEach((star) => {
-        const tw = Math.sin(time * star.twinkleSpeed * 60 + star.twinkleOffset) * 0.3 + 0.7;
+        const tw = Math.sin(time * star.twinkleSpeed * 60 + star.twinkleOffset) * 0.35 + 0.65;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(200, 210, 255, ${star.alpha * tw})`;
@@ -162,75 +188,72 @@ function Starfield() {
         if (star.radius > 1) {
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius * 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(139, 92, 246, ${star.alpha * tw * 0.08})`;
+          ctx.fillStyle = `rgba(139, 92, 246, ${star.alpha * tw * 0.07})`;
           ctx.fill();
         }
 
-        star.y += star.speed * 0.1;
+        star.y += star.speed;
         if (star.y > canvas.height) {
-          star.y = 0;
+          star.y = -2;
           star.x = Math.random() * canvas.width;
         }
       });
 
       // Shooting stars
-      if (Math.random() < 0.002) {
+      if (Math.random() < 0.0025) {
         shootingStars.push({
-          x: Math.random() * canvas.width,
-          y: 0,
+          x: Math.random() * canvas.width, y: 0,
           length: Math.random() * 80 + 40,
-          speed: Math.random() * 4 + 3,
+          speed: Math.random() * 5 + 3,
           angle: (Math.random() * 30 + 60) * (Math.PI / 180),
           alpha: 1,
         });
       }
       shootingStars = shootingStars.filter((s) => s.alpha > 0);
       shootingStars.forEach((s) => {
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
         const tailX = s.x - Math.cos(s.angle) * s.length;
         const tailY = s.y - Math.sin(s.angle) * s.length;
         const grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
         grad.addColorStop(0, `rgba(255, 255, 255, ${s.alpha})`);
         grad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(tailX, tailY);
         ctx.strokeStyle = grad;
         ctx.lineWidth = 1.5;
         ctx.stroke();
         s.x += Math.cos(s.angle) * s.speed;
         s.y += Math.sin(s.angle) * s.speed;
-        s.alpha -= 0.008;
+        s.alpha -= 0.007;
       });
 
       // Comets
       maybeCreateComet();
-      comets = comets.filter((c) => c.alpha > 0 && c.x > -100 && c.x < canvas.width + 100);
+      comets = comets.filter((c) => c.alpha > 0 && c.x > -120 && c.x < canvas.width + 120);
       comets.forEach((c) => {
-        // Comet head glow
-        const headGrad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size * 4);
-        headGrad.addColorStop(0, `rgba(6, 182, 212, ${c.alpha * 0.5})`);
+        const headGrad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size * 5);
+        headGrad.addColorStop(0, `rgba(6, 182, 212, ${c.alpha * 0.45})`);
         headGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = headGrad;
         ctx.beginPath();
-        ctx.arc(c.x, c.y, c.size * 4, 0, Math.PI * 2);
+        ctx.arc(c.x, c.y, c.size * 5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Comet core
         ctx.beginPath();
         ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(200, 240, 255, ${c.alpha})`;
         ctx.fill();
 
-        // Comet tail
-        ctx.beginPath();
-        ctx.moveTo(c.x, c.y);
         const tailX = c.x - c.speedX * c.tailLength * 0.5;
         const tailY = c.y - c.speedY * c.tailLength * 0.3;
         const tGrad = ctx.createLinearGradient(c.x, c.y, tailX, tailY);
-        tGrad.addColorStop(0, `rgba(6, 182, 212, ${c.alpha * 0.4})`);
+        tGrad.addColorStop(0, `rgba(6, 182, 212, ${c.alpha * 0.35})`);
         tGrad.addColorStop(1, 'transparent');
-        ctx.strokeStyle = tGrad;
-        ctx.lineWidth = c.size;
+        ctx.beginPath();
+        ctx.moveTo(c.x, c.y);
         ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = tGrad;
+        ctx.lineWidth = c.size * 0.8;
         ctx.stroke();
 
         c.x += c.speedX;
@@ -247,11 +270,7 @@ function Starfield() {
 
     const handleResize = () => { resize(); createStars(); };
     window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => { cancelAnimationFrame(animationId); window.removeEventListener('resize', handleResize); };
   }, []);
 
   return <canvas ref={canvasRef} className="starfield" />;

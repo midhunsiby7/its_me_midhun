@@ -13,8 +13,9 @@ function App() {
   const [activePage, setActivePage] = useState('home');
   const [transitioning, setTransitioning] = useState(false);
   const [displayPage, setDisplayPage] = useState('home');
-  const cursorRef = useRef(null);
+  const craftRef = useRef(null);
   const glowRef = useRef(null);
+  const trailsRef = useRef([]);
   const pageRef = useRef(null);
 
   const handleNavigate = useCallback((page) => {
@@ -28,45 +29,109 @@ function App() {
     }, 250);
   }, [activePage, transitioning]);
 
-  // Spacecraft cursor
+  // Realistic spacecraft cursor with trailing lag and engine particles
   useEffect(() => {
-    const craft = cursorRef.current;
+    const craft = craftRef.current;
     const glow = glowRef.current;
     if (!craft || !glow) return;
 
-    let mx = 0, my = 0, gx = 0, gy = 0;
-    let angle = 0, prevX = 0, prevY = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let craftX = mouseX, craftY = mouseY;
+    let craftAngle = 0;
+    let glowX = mouseX, glowY = mouseY;
 
-    const move = (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      // Calculate rotation based on movement direction
-      const dx = mx - prevX;
-      const dy = my - prevY;
-      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-        angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    // Trail particles
+    const trailCanvas = document.createElement('canvas');
+    trailCanvas.className = 'cursor-trail-canvas';
+    trailCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;';
+    document.body.appendChild(trailCanvas);
+    const tCtx = trailCanvas.getContext('2d');
+
+    const resizeTrail = () => {
+      trailCanvas.width = window.innerWidth;
+      trailCanvas.height = window.innerHeight;
+    };
+    resizeTrail();
+    window.addEventListener('resize', resizeTrail);
+
+    let particles = [];
+
+    const onMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    document.addEventListener('mousemove', onMove);
+
+    const loop = () => {
+      // Smooth follow — spacecraft lags behind cursor
+      const dx = mouseX - craftX;
+      const dy = mouseY - craftY;
+      craftX += dx * 0.08;
+      craftY += dy * 0.08;
+
+      // Rotate towards movement direction
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 2) {
+        const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+        // Smooth angle interpolation
+        let angleDiff = targetAngle - craftAngle;
+        if (angleDiff > 180) angleDiff -= 360;
+        if (angleDiff < -180) angleDiff += 360;
+        craftAngle += angleDiff * 0.1;
       }
-      prevX = mx;
-      prevY = my;
-      craft.style.left = mx + 'px';
-      craft.style.top = my + 'px';
-      craft.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+      craft.style.left = craftX + 'px';
+      craft.style.top = craftY + 'px';
+      craft.style.transform = `translate(-50%, -50%) rotate(${craftAngle}deg)`;
+
+      // Glow follows even slower
+      glowX += (mouseX - glowX) * 0.04;
+      glowY += (mouseY - glowY) * 0.04;
+      glow.style.left = glowX + 'px';
+      glow.style.top = glowY + 'px';
+
+      // Emit trail particles when moving
+      if (dist > 3) {
+        const angleRad = (craftAngle - 90) * (Math.PI / 180);
+        // Engine position (behind the spacecraft)
+        const engineX = craftX - Math.cos(angleRad) * 14;
+        const engineY = craftY - Math.sin(angleRad) * 14;
+        particles.push({
+          x: engineX + (Math.random() - 0.5) * 4,
+          y: engineY + (Math.random() - 0.5) * 4,
+          vx: -Math.cos(angleRad) * (Math.random() * 1.5 + 0.5),
+          vy: -Math.sin(angleRad) * (Math.random() * 1.5 + 0.5),
+          alpha: 0.6,
+          size: Math.random() * 2.5 + 1,
+          color: Math.random() > 0.5 ? '139, 92, 246' : '6, 182, 212',
+        });
+      }
+
+      // Draw trail particles
+      tCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+      particles = particles.filter(p => p.alpha > 0.01);
+      particles.forEach(p => {
+        tCtx.beginPath();
+        tCtx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
+        tCtx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+        tCtx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.02;
+        p.size *= 0.98;
+      });
+
+      requestAnimationFrame(loop);
     };
 
-    const animGlow = () => {
-      gx += (mx - gx) * 0.07;
-      gy += (my - gy) * 0.07;
-      glow.style.left = gx + 'px';
-      glow.style.top = gy + 'px';
-      requestAnimationFrame(animGlow);
-    };
-
-    document.addEventListener('mousemove', move);
-    const raf = requestAnimationFrame(animGlow);
+    const raf = requestAnimationFrame(loop);
 
     return () => {
-      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize', resizeTrail);
       cancelAnimationFrame(raf);
+      if (trailCanvas.parentNode) trailCanvas.parentNode.removeChild(trailCanvas);
     };
   }, []);
 
@@ -99,13 +164,25 @@ function App() {
     <div className="app">
       <Starfield />
       <div ref={glowRef} className="cursor-glow" />
-      {/* Spacecraft SVG cursor */}
-      <svg ref={cursorRef} className="cursor-spacecraft" width="28" height="28" viewBox="0 0 32 32" fill="none">
-        <path d="M16 2 L20 12 L26 14 L20 16 L22 26 L16 20 L10 26 L12 16 L6 14 L12 12 Z" fill="rgba(139, 92, 246, 0.7)" stroke="rgba(139, 92, 246, 0.9)" strokeWidth="0.5"/>
-        <path d="M16 5 L18 12 L16 18 L14 12 Z" fill="rgba(200, 180, 255, 0.5)"/>
-        {/* Engine trail */}
-        <ellipse cx="16" cy="24" rx="3" ry="5" fill="rgba(6, 182, 212, 0.25)"/>
-        <ellipse cx="16" cy="22" rx="1.5" ry="2.5" fill="rgba(139, 92, 246, 0.35)"/>
+      {/* Realistic spacecraft SVG cursor — larger and detailed */}
+      <svg ref={craftRef} className="cursor-spacecraft" width="36" height="44" viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Main fuselage */}
+        <path d="M18 2 C18 2 22 10 23 16 L24 28 L22 32 L18 36 L14 32 L12 28 L13 16 C14 10 18 2 18 2Z" fill="rgba(180, 160, 220, 0.6)" stroke="rgba(139, 92, 246, 0.8)" strokeWidth="0.6"/>
+        {/* Cockpit window */}
+        <ellipse cx="18" cy="12" rx="3" ry="4" fill="rgba(6, 182, 212, 0.35)" stroke="rgba(6, 182, 212, 0.5)" strokeWidth="0.4"/>
+        <ellipse cx="18" cy="11" rx="1.5" ry="2" fill="rgba(100, 220, 255, 0.25)"/>
+        {/* Left wing */}
+        <path d="M12 22 L4 30 L6 32 L12 28Z" fill="rgba(139, 92, 246, 0.5)" stroke="rgba(139, 92, 246, 0.6)" strokeWidth="0.4"/>
+        {/* Right wing */}
+        <path d="M24 22 L32 30 L30 32 L24 28Z" fill="rgba(139, 92, 246, 0.5)" stroke="rgba(139, 92, 246, 0.6)" strokeWidth="0.4"/>
+        {/* Center stripe */}
+        <path d="M18 6 L18 30" stroke="rgba(200, 180, 255, 0.2)" strokeWidth="0.8"/>
+        {/* Engine glow — left */}
+        <ellipse cx="15" cy="35" rx="2.5" ry="4" fill="rgba(6, 182, 212, 0.2)"/>
+        <ellipse cx="15" cy="34" rx="1.2" ry="2.5" fill="rgba(139, 92, 246, 0.25)"/>
+        {/* Engine glow — right */}
+        <ellipse cx="21" cy="35" rx="2.5" ry="4" fill="rgba(6, 182, 212, 0.2)"/>
+        <ellipse cx="21" cy="34" rx="1.2" ry="2.5" fill="rgba(139, 92, 246, 0.25)"/>
       </svg>
       <Navbar activePage={activePage} onNavigate={handleNavigate} />
       <div className="page-wrapper" ref={pageRef}>

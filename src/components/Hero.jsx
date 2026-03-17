@@ -14,29 +14,36 @@ function Hero({ onNavigate }) {
     <div className={`hero ${loaded ? 'hero--loaded' : ''}`}>
       <div className="hero__orb hero__orb--1"></div>
       <div className="hero__orb hero__orb--2"></div>
+      <div className="hero__orb hero__orb--3"></div>
 
       <div className="hero__content">
+        {/* Photo + Name row */}
         <div className="hero__intro">
           <div className="hero__photo-wrap">
             <img src={profileImg} alt="Midhun Siby" className="hero__photo" />
             <div className="hero__photo-ring"></div>
+            <div className="hero__photo-ring hero__photo-ring--outer"></div>
           </div>
           <div className="hero__text">
             <p className="hero__greeting">
               <span className="hero__wave">👋</span> Hello, I'm
             </p>
             <h1 className="hero__name">
-              Midhun <span className="hero__name-accent">Siby</span>
+              <span className="hero__name-first">Midhun</span>{' '}
+              <span className="hero__name-last">Siby</span>
             </h1>
           </div>
         </div>
 
+        {/* Tagline */}
         <div className="hero__tagline">
           <span className="hero__tag-prefix">{'>'}</span>
-          <span>
-            Developer<span className="hero__sep">•</span>
-            Programmer<span className="hero__sep">•</span>
-            Tech Enthusiast
+          <span className="hero__tagline-roles">
+            <span className="hero__role">Developer</span>
+            <span className="hero__sep">•</span>
+            <span className="hero__role">Programmer</span>
+            <span className="hero__sep">•</span>
+            <span className="hero__role">Tech Enthusiast</span>
           </span>
           <span className="hero__cursor-blink">|</span>
         </div>
@@ -46,6 +53,23 @@ function Hero({ onNavigate }) {
           exploring the boundaries of technology, physics, and beyond.
         </p>
 
+        {/* Quick stats */}
+        <div className="hero__stats">
+          <div className="hero__stat glass-card">
+            <span className="hero__stat-num">5+</span>
+            <span className="hero__stat-label">Projects</span>
+          </div>
+          <div className="hero__stat glass-card">
+            <span className="hero__stat-num">6+</span>
+            <span className="hero__stat-label">Languages</span>
+          </div>
+          <div className="hero__stat glass-card">
+            <span className="hero__stat-num">3+</span>
+            <span className="hero__stat-label">Cloud Platforms</span>
+          </div>
+        </div>
+
+        {/* Actions */}
         <div className="hero__actions">
           <button className="hero__btn hero__btn--primary" onClick={() => onNavigate('projects')}>
             <span>View Projects</span>
@@ -56,6 +80,7 @@ function Hero({ onNavigate }) {
           </button>
         </div>
 
+        {/* Socials */}
         <div className="hero__socials">
           <a href="https://github.com/midhunsiby7" target="_blank" rel="noopener noreferrer" className="hero__social" title="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -69,6 +94,14 @@ function Hero({ onNavigate }) {
           <a href="mailto:midhunsibi123@gmail.com" className="hero__social" title="Email">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
           </a>
+        </div>
+
+        {/* Scroll hint */}
+        <div className="hero__hint">
+          <span>Explore my work</span>
+          <div className="hero__hint-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+          </div>
         </div>
       </div>
     </div>
