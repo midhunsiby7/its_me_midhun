@@ -35,8 +35,15 @@
   padding: 0;
   transition: transform var(--transition-base);
 }
-.navbar__logo:hover { transform: scale(1.05); }
-.navbar__logo-b { color: var(--accent-purple); font-weight: 400; }
+
+.navbar__logo:hover {
+  transform: scale(1.05);
+}
+
+.navbar__logo-b {
+  color: var(--accent-purple);
+  font-weight: 400;
+}
 
 /* Hamburger button */
 .navbar__hamburger {
@@ -49,6 +56,7 @@
   padding: 4px;
   z-index: 101;
 }
+
 .navbar__hamburger span {
   display: block;
   width: 22px;
@@ -57,9 +65,18 @@
   border-radius: 2px;
   transition: all 0.3s ease;
 }
-.navbar__hamburger--open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-.navbar__hamburger--open span:nth-child(2) { opacity: 0; }
-.navbar__hamburger--open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+.navbar__hamburger--open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.navbar__hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar__hamburger--open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
 
 .navbar__links {
   display: flex;
@@ -80,8 +97,15 @@
   border-radius: 10px;
   transition: all var(--transition-base);
 }
-.navbar__link:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.04); }
-.navbar__link--active { color: var(--text-primary); }
+
+.navbar__link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.navbar__link--active {
+  color: var(--text-primary);
+}
 
 .navbar__indicator {
   position: absolute;
@@ -108,6 +132,7 @@
   transition: all var(--transition-base);
   margin-left: 0.5rem;
 }
+
 .navbar__cta:hover {
   background-position: right center;
   transform: translateY(-2px);
@@ -136,9 +161,9 @@
     align-items: stretch;
     gap: 0.25rem;
     padding: 1rem;
-    
+
     /* Glassmorphism Card Effect */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.2) 100%);
     backdrop-filter: blur(32px) saturate(1.4);
     -webkit-backdrop-filter: blur(32px) saturate(1.4);
     border: 1px solid rgba(255, 255, 255, 0.10);
@@ -170,7 +195,9 @@
     background: rgba(139, 92, 246, 0.15);
   }
 
-  .navbar__indicator { display: none; }
+  .navbar__indicator {
+    display: none;
+  }
 
   .navbar__cta {
     margin: 0.5rem 0 0 0;
