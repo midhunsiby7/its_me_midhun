@@ -134,9 +134,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: rgba(5, 5, 16, 0.95);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
+    background: var(--bg-primary);
     padding: 1.5rem;
     transform: translateX(100%);
     transition: transform 0.35s var(--ease-out-expo);
