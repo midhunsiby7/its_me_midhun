@@ -79,7 +79,7 @@ function Starfield() {
           twinkleOffset: 0
         });
       }
-      setStars(newStars);
+      stars = newStars;
 
       blackHole = {
         x: canvas.width * 0.8,
