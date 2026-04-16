@@ -15,26 +15,71 @@ function Starfield() {
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
-
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
+    // Pre-defined constellation patterns (relative to viewport)
+    const CONSTELLATIONS = [
+      // Orion
+      { x: 0.3, y: 0.4, stars: [[0,0], [20,-40], [-15,-45], [15,45], [-20,50], [0,5], [10,4], [-10,6]] },
+      // Big Dipper (Ursa Major)
+      { x: 0.1, y: 0.2, stars: [[0,0], [40,5], [75,-10], [95,-40], [130,-55], [160,-45], [155,-10]] },
+      // Cassiopeia
+      { x: 0.5, y: 0.15, stars: [[0,0], [30,20], [60,-10], [90,15], [120,-5]] }
+    ];
+
     const createStars = () => {
-      stars = [];
-      const count = Math.floor((canvas.width * canvas.height) / 4500);
+      const newStars = [];
+      const count = Math.min(600, (window.innerWidth * window.innerHeight) / 2500);
+
+      // 1. Add faint background stars
       for (let i = 0; i < count; i++) {
-        stars.push({
+        newStars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 1.4 + 0.2,
-          alpha: Math.random() * 0.75 + 0.2,
-          speed: Math.random() * 0.5 + 0.15,
-          twinkleSpeed: Math.random() * 0.012 + 0.005,
+          radius: Math.random() * 0.8 + 0.1,
+          alpha: Math.random() * 0.5 + 0.1,
+          twinkleSpeed: Math.random() * 0.05 + 0.01,
           twinkleOffset: Math.random() * Math.PI * 2,
         });
       }
+
+      // 2. Add constellation stars (Brighter)
+      CONSTELLATIONS.forEach(con => {
+        const baseDirX = con.x * canvas.width;
+        const baseDirY = con.y * canvas.height;
+        con.stars.forEach(([offX, offY]) => {
+          newStars.push({
+            x: baseDirX + offX,
+            y: baseDirY + offY,
+            radius: Math.random() * 0.5 + 1.2, // Brighter
+            alpha: 0.8 + Math.random() * 0.2,
+            twinkleSpeed: 0.02,
+            twinkleOffset: Math.random(),
+          });
+        });
+      });
+
+      // 3. Add Milky Way dust stars
+      for (let i = 0; i < 400; i++) {
+        const x = Math.random() * (canvas.width * 0.4);
+        const y = Math.random() * canvas.height;
+        // Tilt the band
+        const tiltedX = x + (y - canvas.height/2) * 0.2;
+        
+        newStars.push({
+          x: tiltedX,
+          y: y,
+          radius: Math.random() * 0.4 + 0.05,
+          alpha: Math.random() * 0.15 + 0.02,
+          isMilkyWay: true,
+          twinkleSpeed: 0,
+          twinkleOffset: 0
+        });
+      }
+      setStars(newStars);
 
       blackHole = {
         x: canvas.width * 0.8,
@@ -47,6 +92,25 @@ function Starfield() {
       };
     };
 
+    const drawMilkyWay = () => {
+      ctx.save();
+      const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.4, 0);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      grad.addColorStop(0.3, 'rgba(139, 92, 246, 0.015)'); // Subtle violet tint
+      grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.012)'); // Core glow
+      grad.addColorStop(0.7, 'rgba(59, 130, 246, 0.01)'); 
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      
+      ctx.fillStyle = grad;
+      ctx.globalCompositeOperation = 'screen';
+      
+      // Draw as a tilted rectangle
+      ctx.translate(canvas.width * 0.1, canvas.height / 2);
+      ctx.rotate(-0.15);
+      ctx.fillRect(-canvas.width * 0.1, -canvas.height, canvas.width * 0.35, canvas.height * 2);
+      ctx.restore();
+    };
+
     const getLensedPos = (x, y, bh) => {
       const dx = x - bh.x;
       const dy = y - bh.y;
@@ -55,11 +119,8 @@ function Starfield() {
       
       if (d < bh.radius * 0.95) return null;
 
-      // Extreme 'Interstellar' Schwarzschild Lensing
       const rs = bh.radius * 1.8;
       const deflection = (rs * rs) / (d + 0.1);
-      
-      // Near-horizon warp factor - create the 'Gargantua' distortion
       const warp = Math.pow(rs / d, 3.2) * 2.2;
       const factor = 1 + (deflection + warp) / d;
       
@@ -85,61 +146,42 @@ function Starfield() {
       ctx.save();
       ctx.translate(bh.x, bh.y);
 
-      // Gargantua Color Palette
-      const colors = {
-        outer: 'rgba(255, 69, 0, 0.25)', // Red-Orange
-        mid: 'rgba(255, 140, 0, 0.45)',  // Dark Orange
-        inner: 'rgba(255, 215, 0, 0.8)', // Gold
-        photon: 'rgba(255, 255, 255, 0.95)' // White-Hot
-      };
-
       const drawPlasmaDisk = (isBack) => {
         ctx.globalCompositeOperation = 'screen';
-        
-        // High density filaments for that 'turbulent gas' look
         const layers = 22; 
         const segments = 100;
         
         for (let l = 0; l < layers; l++) {
           const rBase = bh.radius * (2.4 + l * 0.15);
-          const hue = 15 + (l % 5) * 6; // Range: 15-45 (Deep Red to Gold)
+          const hue = 15 + (l % 5) * 6;
           const alphaBase = (0.22 - l * 0.008) * pulse;
           
           ctx.beginPath();
           for (let s = 0; s <= segments; s++) {
-            // Distribute points around the disk
             const angle = (s / segments) * Math.PI; 
             const flowSpeed = 1.2 + l * 0.05;
             const flowAngle = angle + time * flowSpeed;
-            
             const diskX = Math.cos(flowAngle) * rBase;
             const diskZ = Math.sin(flowAngle) * rBase;
             
             let x, y;
             if (isBack) {
-              // The Halo (Warped back part)
-              // Interstellar logic: back part rises above and below the horizon
               const lensedR = bh.radius + l * 1.6;
               const angleLensed = angle * 2; 
               x = Math.cos(angleLensed) * lensedR;
-              y = Math.sin(angleLensed) * lensedR * 1.15; // More circular
+              y = Math.sin(angleLensed) * lensedR * 1.15;
             } else {
-              // The Main Disk (Front part)
               x = diskX;
               y = diskZ * 0.12; 
             }
 
-            // --- Relativistic Doppler Beaming ---
-            // Side rotating toward us (left) is much brighter/whiter
-            // Side moving away (right) is dimmer/redder
-            const velocityEffect = 1 - (diskX / rBase) * 0.7; // Asymmetry
+            const velocityEffect = 1 - (diskX / rBase) * 0.7;
             const brightness = velocityEffect * alphaBase;
-            const tempHue = hue + (velocityEffect > 1 ? 15 : 0); // Whiter on left
+            const tempHue = hue + (velocityEffect > 1 ? 15 : 0);
             
             ctx.strokeStyle = `hsla(${tempHue}, 95%, ${50 + velocityEffect * 25}%, ${brightness})`;
             ctx.lineWidth = 1.6 - l * 0.05;
 
-            // Add turbulence noise to the path
             const noise = Math.sin(time * 2 + s * 0.5 + l) * 1.5;
             const finalX = x + noise * (isBack ? 0.2 : 1);
             const finalY = y + noise * (isBack ? 1 : 0.2);
@@ -147,7 +189,6 @@ function Starfield() {
             if (s === 0) ctx.moveTo(finalX, finalY);
             else ctx.lineTo(finalX, finalY);
 
-            // Break path into filaments to create the 'streaky' plasma texture
             if (s % 10 === 0) {
               ctx.stroke();
               ctx.beginPath();
@@ -157,7 +198,6 @@ function Starfield() {
           ctx.stroke();
         }
 
-        // --- Realistic Disk Infall (Sink) ---
         if (!isBack) {
           ctx.save();
           for (let i = 0; i < 8; i++) {
@@ -187,17 +227,12 @@ function Starfield() {
         }
       };
 
-      // 1. Halo Pass
       drawPlasmaDisk(true);
-
-      // 2. High-Contrast Event Horizon & Photon Sphere
       ctx.globalCompositeOperation = 'source-over';
-      
-      // Intense Inner Glow (Atmosphere of light at the edge)
       const photonGlow = ctx.createRadialGradient(0, 0, bh.radius * 0.85, 0, 0, bh.radius * 1.3);
       photonGlow.addColorStop(0, '#000000');
       photonGlow.addColorStop(0.32, 'rgba(255, 69, 0, 0.5)'); 
-      photonGlow.addColorStop(0.48, 'rgba(255, 255, 255, 0.95)'); // Photon Limit
+      photonGlow.addColorStop(0.48, 'rgba(255, 255, 255, 0.95)');
       photonGlow.addColorStop(0.65, 'rgba(255, 215, 0, 0.4)');
       photonGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = photonGlow;
@@ -205,26 +240,22 @@ function Starfield() {
       ctx.arc(0, 0, bh.radius * 1.3, 0, Math.PI * 2);
       ctx.fill();
 
-      // The Void (Perfect Black Shadow)
       const voidGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, bh.radius);
       voidGrad.addColorStop(0, '#000000');
       voidGrad.addColorStop(0.9, '#000002');
-      voidGrad.addColorStop(1, '#050200'); // Faint warm edge
+      voidGrad.addColorStop(1, '#050200');
       ctx.fillStyle = voidGrad;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Sharp Photon Ring
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
       ctx.lineWidth = 0.6;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius * 1.01, 0, Math.PI * 2);
       ctx.stroke();
 
-      // 3. Front Disk Pass
       drawPlasmaDisk(false);
-
       ctx.restore();
     };
 
@@ -233,12 +264,22 @@ function Starfield() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       time += 0.016;
 
-      // Draw Stars with Heavy Gravitational Lensing
+      drawMilkyWay();
+
       stars.forEach((star) => {
+        // Very slow cinematic rotation
+        const rotX = star.x - canvas.width / 2;
+        const rotY = star.y - canvas.height / 2;
+        const angle = 0.00005; // tiny rotation
+        const newX = rotX * Math.cos(angle) - rotY * Math.sin(angle) + canvas.width / 2;
+        const newY = rotX * Math.sin(angle) + rotY * Math.cos(angle) + canvas.height / 2;
+        star.x = newX;
+        star.y = newY;
+
         const lensed = getLensedPos(star.x, star.y, blackHole);
         if (!lensed) return; 
 
-        const tw = Math.sin(time * star.twinkleSpeed * 60 + star.twinkleOffset) * 0.35 + 0.65;
+        const tw = star.isMilkyWay ? 1 : (Math.sin(time * star.twinkleSpeed * 60 + star.twinkleOffset) * 0.35 + 0.65);
         const drawX = lensed.x;
         const drawY = lensed.y;
         const drawR = star.radius * lensed.mag;
@@ -247,24 +288,10 @@ function Starfield() {
         ctx.arc(drawX, drawY, drawR, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(220, 230, 255, ${star.alpha * tw * Math.min(1.8, lensed.mag)})`;
         ctx.fill();
-
-        if (star.radius > 1) {
-          ctx.beginPath();
-          ctx.arc(drawX, drawY, drawR * 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(139, 92, 246, ${star.alpha * tw * 0.05})`;
-          ctx.fill();
-        }
-
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-          star.y = -2;
-          star.x = Math.random() * canvas.width;
-        }
       });
 
       drawBlackHole(time);
 
-      // Shooting stars
       if (Math.random() < 0.002) {
         shootingStars.push({
           x: Math.random() * canvas.width, y: 0,
