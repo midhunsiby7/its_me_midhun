@@ -73,18 +73,22 @@ function Starfield() {
       const d2 = dx * dx + dy * dy;
       const d = Math.sqrt(d2);
       
-      if (d < bh.radius * 0.9) return null;
+      // Infinite redshift at event horizon - star disappears
+      if (d < bh.radius * 0.92) return null;
 
-      // More dramatic lensing: theta = 4GM / rc^2
-      // We use a stronger deflection for the 'Interstellar' look
-      const rs = bh.radius * 1.5;
+      // Extreme Gravitational Lensing - closer to the math of Schwarzschild metrics
+      // Light is bent more aggressively as it approaches the horizon shadow
+      const rs = bh.radius * 1.65;
       const deflection = (rs * rs) / (d + 0.1);
-      const factor = 1 + deflection / d;
+      
+      // Near-horizon warp factor
+      const warp = Math.pow(rs / d, 2.5) * 1.8;
+      const factor = 1 + (deflection + warp) / d;
       
       return {
         x: bh.x + dx * factor,
         y: bh.y + dy * factor,
-        mag: Math.min(3, 1 + deflection * 0.12)
+        mag: Math.min(3.5, 1 + (deflection + warp) * 0.15)
       };
     };
 
@@ -92,64 +96,54 @@ function Starfield() {
       if (!blackHole) return;
       const bh = blackHole;
       
-      // 1. Floating Motion (Subtle drift)
-      const floatX = Math.sin(time * 0.4) * 8;
-      const floatY = Math.cos(time * 0.3) * 12;
+      const floatX = Math.sin(time * 0.45) * 10;
+      const floatY = Math.cos(time * 0.35) * 15;
       bh.x += (bh.targetX + floatX - bh.x) * 0.05;
       bh.y += (bh.targetY + floatY - bh.y) * 0.05;
       
       bh.pulsePhase += 0.012;
-      const pulse = Math.sin(bh.pulsePhase) * 0.08 + 0.92;
+      const pulse = Math.sin(bh.pulsePhase) * 0.06 + 0.94;
 
       ctx.save();
       ctx.translate(bh.x, bh.y);
 
-      // Additive blending for the glowing plasma
-      ctx.globalCompositeOperation = 'screen';
-
       const drawPlasmaDisk = (isBack) => {
-        const layers = 15;
+        ctx.globalCompositeOperation = 'screen';
+        const layers = 18; // More layers for 'fire' intensity
         const segments = 120;
         
         for (let l = 0; l < layers; l++) {
-          const rBase = bh.radius * (2.2 + l * 0.15);
-          const alphaBase = (0.28 - l * 0.015) * pulse;
-          const hue = 260 + (l % 4) * 5;
+          const rBase = bh.radius * (2.2 + l * 0.18);
+          const alphaBase = (0.3 - l * 0.014) * pulse;
+          const hue = 260 + (l % 6) * 4;
           
           ctx.beginPath();
           for (let s = 0; s <= segments; s++) {
             const angle = (s / segments) * Math.PI;
-            // Shift angle based on time for internal flow
-            const flowAngle = angle + time * 0.8;
+            const flowAngle = angle + time * 1.2; // Faster flow
             const diskX = Math.cos(flowAngle) * rBase;
             const diskZ = Math.sin(flowAngle) * rBase;
             
-            // Warp logic: back half of disk (Z < 0) is lensed over/under
-            // Front half (Z > 0) is warped into the horizontal disk
             let x, y;
             if (isBack) {
-              // The 'Halo' - back part of the disk being lensed
-              const lensedR = bh.radius * 1.05 + l * 1.2;
+              const lensedR = bh.radius * 1.05 + l * 1.4;
               x = Math.cos(angle * 2) * lensedR;
-              y = Math.sin(angle * 2) * lensedR * 2.2; // Vertical stretch
+              y = Math.sin(angle * 2) * lensedR * 2.4; 
             } else {
-              // The 'Direct' disk - front part
               x = diskX;
-              y = diskZ * 0.15; // Flattened
+              y = diskZ * 0.15;
             }
 
-            // Relativistic Beaming: Left side (approaching) is brighter
-            const beam = 1 - (diskX / rBase) * 0.6; 
-            const alpha = alphaBase * beam * (isBack ? 0.4 : 1);
+            const beam = 1 - (diskX / rBase) * 0.65; 
+            const alpha = alphaBase * beam * (isBack ? 0.35 : 1);
             
-            ctx.strokeStyle = `hsla(${hue}, 80%, 75%, ${alpha})`;
-            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = `hsla(${hue}, 85%, 75%, ${alpha})`;
+            ctx.lineWidth = 1.4;
             
             if (s === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
 
-            // Random plasma 'flicker' segments
-            if (s % 15 === 0) {
+            if (s % 12 === 0) {
               ctx.stroke();
               ctx.beginPath();
               ctx.moveTo(x, y);
@@ -157,29 +151,74 @@ function Starfield() {
           }
           ctx.stroke();
         }
+
+        // --- Disk Infall (Plasma diving into the hole) ---
+        if (!isBack) {
+          ctx.save();
+          for (let i = 0; i < 6; i++) {
+            const rStart = bh.radius * 2.2;
+            const rEnd = bh.radius * 0.95;
+            const alpha = 0.15 * pulse;
+            const angle = (i / 6) * Math.PI * 2 + time * 1.5;
+            
+            const grad = ctx.createLinearGradient(
+              Math.cos(angle) * rStart, Math.sin(angle) * rStart * 0.1,
+              Math.cos(angle) * rEnd, Math.sin(angle) * rEnd * 0.1
+            );
+            grad.addColorStop(0, `rgba(139, 92, 246, ${alpha})`);
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * rStart, Math.sin(angle) * rStart * 0.1);
+            ctx.bezierCurveTo(
+              Math.cos(angle + 0.5) * rStart * 0.5, Math.sin(angle + 0.5) * rStart * 0.05,
+              Math.cos(angle + 1) * rEnd, Math.sin(angle + 1) * rEnd * 0.02,
+              Math.cos(angle + 1.2) * rEnd, Math.sin(angle + 1.2) * rEnd * 0.01
+            );
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
       };
 
-      // Pass 1: Draw the lensed halo (back of the disk)
+      // Pass 1: Halo
       drawPlasmaDisk(true);
 
-      // Pass 2: Photon Sphere (sharp bright inner rim)
+      // Pass 2: Photon Sphere & Drift (Intense fire at the edge)
       ctx.globalCompositeOperation = 'source-over';
-      const photonGrad = ctx.createRadialGradient(0, 0, bh.radius * 0.95, 0, 0, bh.radius * 1.1);
-      photonGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      photonGrad.addColorStop(0.5, 'rgba(220, 200, 255, 0.9)');
-      photonGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
-      ctx.fillStyle = photonGrad;
+      
+      // Outer soft ring (glow)
+      const photonGlow = ctx.createRadialGradient(0, 0, bh.radius * 0.9, 0, 0, bh.radius * 1.25);
+      photonGlow.addColorStop(0, 'rgba(2, 2, 20, 1)'); // Dark core transition
+      photonGlow.addColorStop(0.35, 'rgba(139, 92, 246, 0.4)');
+      photonGlow.addColorStop(0.5, 'rgba(255, 255, 255, 0.9)');
+      photonGlow.addColorStop(0.65, 'rgba(139, 92, 246, 0.3)');
+      photonGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = photonGlow;
       ctx.beginPath();
-      ctx.arc(0, 0, bh.radius * 1.2, 0, Math.PI * 2);
+      ctx.arc(0, 0, bh.radius * 1.25, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pass 3: Event Horizon (The Void)
+      // Sharp Photon Ring (The limit of light)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(0, 0, bh.radius * 1.02, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Pass 3: Bottomless Shadow (Event Horizon)
+      const shadowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, bh.radius);
+      shadowGrad.addColorStop(0, '#000002'); // Purest black
+      shadowGrad.addColorStop(0.85, '#000005');
+      shadowGrad.addColorStop(1, '#05051a'); // Deep cosmic blue-black edge
+      ctx.fillStyle = shadowGrad;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#000002';
       ctx.fill();
 
-      // Pass 4: Draw the main horizontal disk (front part)
+      // Pass 4: Front Disk
       ctx.globalCompositeOperation = 'screen';
       drawPlasmaDisk(false);
 
