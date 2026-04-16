@@ -70,21 +70,21 @@ function Starfield() {
     const getLensedPos = (x, y, bh) => {
       const dx = x - bh.x;
       const dy = y - bh.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
+      const d2 = dx * dx + dy * dy;
+      const d = Math.sqrt(d2);
       
-      // Event horizon shadow zone
-      if (d < bh.radius * 0.85) return null;
+      if (d < bh.radius * 0.9) return null;
 
-      // Gravitational lensing math - deflect light around the mass
-      // Based on simplified lensing: theta = 4GM / rc^2
-      // We simulate this by offsetting the lookup coordinate
-      const strength = (bh.radius * bh.radius * 1.8) / (d + 0.1);
-      const factor = 1 + strength / d;
+      // More dramatic lensing: theta = 4GM / rc^2
+      // We use a stronger deflection for the 'Interstellar' look
+      const rs = bh.radius * 1.5;
+      const deflection = (rs * rs) / (d + 0.1);
+      const factor = 1 + deflection / d;
       
       return {
         x: bh.x + dx * factor,
         y: bh.y + dy * factor,
-        mag: Math.min(2.5, 1 + strength * 0.05) // Brighten lensed stars
+        mag: Math.min(3, 1 + deflection * 0.12)
       };
     };
 
@@ -92,93 +92,96 @@ function Starfield() {
       if (!blackHole) return;
       const bh = blackHole;
       
-      // Smooth movement towards mouse/default target
-      bh.x += (bh.targetX - bh.x) * 0.02;
-      bh.y += (bh.targetY - bh.y) * 0.02;
+      // 1. Floating Motion (Subtle drift)
+      const floatX = Math.sin(time * 0.4) * 8;
+      const floatY = Math.cos(time * 0.3) * 12;
+      bh.x += (bh.targetX + floatX - bh.x) * 0.05;
+      bh.y += (bh.targetY + floatY - bh.y) * 0.05;
       
-      bh.pulsePhase += 0.01;
-      bh.rotationAngle += 0.015;
-      const pulse = Math.sin(bh.pulsePhase) * 0.1 + 0.9;
+      bh.pulsePhase += 0.012;
+      const pulse = Math.sin(bh.pulsePhase) * 0.08 + 0.92;
 
       ctx.save();
       ctx.translate(bh.x, bh.y);
 
-      // 1. Gravitational lensing glow (faint outer haze)
-      const outerGlow = ctx.createRadialGradient(0, 0, bh.radius, 0, 0, bh.radius * 6);
-      outerGlow.addColorStop(0, 'rgba(139, 92, 246, 0.08)');
-      outerGlow.addColorStop(0.4, 'rgba(59, 130, 246, 0.03)');
-      outerGlow.addColorStop(1, 'transparent');
-      ctx.fillStyle = outerGlow;
+      // Additive blending for the glowing plasma
+      ctx.globalCompositeOperation = 'screen';
+
+      const drawPlasmaDisk = (isBack) => {
+        const layers = 15;
+        const segments = 120;
+        
+        for (let l = 0; l < layers; l++) {
+          const rBase = bh.radius * (2.2 + l * 0.15);
+          const alphaBase = (0.28 - l * 0.015) * pulse;
+          const hue = 260 + (l % 4) * 5;
+          
+          ctx.beginPath();
+          for (let s = 0; s <= segments; s++) {
+            const angle = (s / segments) * Math.PI;
+            // Shift angle based on time for internal flow
+            const flowAngle = angle + time * 0.8;
+            const diskX = Math.cos(flowAngle) * rBase;
+            const diskZ = Math.sin(flowAngle) * rBase;
+            
+            // Warp logic: back half of disk (Z < 0) is lensed over/under
+            // Front half (Z > 0) is warped into the horizontal disk
+            let x, y;
+            if (isBack) {
+              // The 'Halo' - back part of the disk being lensed
+              const lensedR = bh.radius * 1.05 + l * 1.2;
+              x = Math.cos(angle * 2) * lensedR;
+              y = Math.sin(angle * 2) * lensedR * 2.2; // Vertical stretch
+            } else {
+              // The 'Direct' disk - front part
+              x = diskX;
+              y = diskZ * 0.15; // Flattened
+            }
+
+            // Relativistic Beaming: Left side (approaching) is brighter
+            const beam = 1 - (diskX / rBase) * 0.6; 
+            const alpha = alphaBase * beam * (isBack ? 0.4 : 1);
+            
+            ctx.strokeStyle = `hsla(${hue}, 80%, 75%, ${alpha})`;
+            ctx.lineWidth = 1.2;
+            
+            if (s === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+
+            // Random plasma 'flicker' segments
+            if (s % 15 === 0) {
+              ctx.stroke();
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+            }
+          }
+          ctx.stroke();
+        }
+      };
+
+      // Pass 1: Draw the lensed halo (back of the disk)
+      drawPlasmaDisk(true);
+
+      // Pass 2: Photon Sphere (sharp bright inner rim)
+      ctx.globalCompositeOperation = 'source-over';
+      const photonGrad = ctx.createRadialGradient(0, 0, bh.radius * 0.95, 0, 0, bh.radius * 1.1);
+      photonGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      photonGrad.addColorStop(0.5, 'rgba(220, 200, 255, 0.9)');
+      photonGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+      ctx.fillStyle = photonGrad;
       ctx.beginPath();
-      ctx.arc(0, 0, bh.radius * 6, 0, Math.PI * 2);
+      ctx.arc(0, 0, bh.radius * 1.2, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Accretion Disk - Back Part (Lensed over the top and bottom)
-      // This is the classic "Interstellar" look where the back of the disk 
-      // is visible as a ring around the vertical axis.
-      ctx.save();
-      const diskLayers = 8;
-      for (let i = 0; i < diskLayers; i++) {
-        const r = bh.radius * 2.2 + i * 4;
-        const alpha = (0.25 - i * 0.03) * pulse;
-        const hue = 260 + i * 10;
-        
-        ctx.strokeStyle = `hsla(${hue}, 80%, 75%, ${alpha})`;
-        ctx.lineWidth = 1.5;
-        ctx.lineCap = 'round';
-        
-        // Top lensed arc
-        ctx.beginPath();
-        ctx.ellipse(0, 0, r, r * 1.1, 0, Math.PI * 1.1, Math.PI * 1.9);
-        ctx.stroke();
-        
-        // Bottom lensed arc
-        ctx.beginPath();
-        ctx.ellipse(0, 0, r, r * 1.1, 0, Math.PI * 0.1, Math.PI * 0.9);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // 3. Photon Sphere (Inner bright ring)
-      const photonGrad = ctx.createRadialGradient(0, 0, bh.radius * 0.9, 0, 0, bh.radius * 1.1);
-      photonGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-      photonGrad.addColorStop(0.5, 'rgba(200, 180, 255, 0.8)');
-      photonGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
-      ctx.strokeStyle = photonGrad;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(0, 0, bh.radius * 1.05, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // 4. Dark Core (Event Horizon)
+      // Pass 3: Event Horizon (The Void)
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#010105';
+      ctx.fillStyle = '#000002';
       ctx.fill();
 
-      // 5. Accretion Disk - Front Part
-      // This part passes in front of the black hole
-      ctx.save();
-      for (let i = 0; i < diskLayers; i++) {
-        const r = bh.radius * 2.4 + i * 6;
-        const alpha = (0.4 - i * 0.04) * pulse;
-        const hue = 260 + i * 12;
-        
-        // Relativistic Beaming - render left side brighter (moving towards observer)
-        const grad = ctx.createLinearGradient(-r, 0, r, 0);
-        grad.addColorStop(0, `hsla(${hue}, 90%, 80%, ${alpha * 1.5})`);
-        grad.addColorStop(0.5, `hsla(${hue}, 80%, 70%, ${alpha})`);
-        grad.addColorStop(1, `hsla(${hue}, 70%, 50%, ${alpha * 0.3})`);
-        
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = 2.5 - i * 0.2;
-        
-        ctx.beginPath();
-        // Just the front arc
-        ctx.ellipse(0, 0, r, r * 0.15, bh.rotationAngle * 0.1, Math.PI * 0, Math.PI * 1);
-        ctx.stroke();
-      }
-      ctx.restore();
+      // Pass 4: Draw the main horizontal disk (front part)
+      ctx.globalCompositeOperation = 'screen';
+      drawPlasmaDisk(false);
 
       ctx.restore();
     };
