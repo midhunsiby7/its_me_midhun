@@ -122,7 +122,8 @@ function Starfield() {
               const lensedR = bh.radius + l * 1.6;
               const angleLensed = angle * 2; 
               x = Math.cos(angleLensed) * lensedR;
-              y = Math.sin(angleLensed) * lensedR * 1.15; // More circular, slightly vertical stretch for realism            } else {
+              y = Math.sin(angleLensed) * lensedR * 1.15; // More circular
+            } else {
               // The Main Disk (Front part)
               x = diskX;
               y = diskZ * 0.12; 
