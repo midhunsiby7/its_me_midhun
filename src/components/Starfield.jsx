@@ -119,11 +119,10 @@ function Starfield() {
             if (isBack) {
               // The Halo (Warped back part)
               // Interstellar logic: back part rises above and below the horizon
-              const lensedR = bh.radius * 1.02 + l * 1.5;
-              const angleLensed = angle * 2 + Math.sin(time * 0.2 + l) * 0.02;
+              const lensedR = bh.radius + l * 1.6;
+              const angleLensed = angle * 2; 
               x = Math.cos(angleLensed) * lensedR;
-              y = Math.sin(angleLensed) * lensedR * 2.8; 
-            } else {
+              y = Math.sin(angleLensed) * lensedR * 1.15; // More circular, slightly vertical stretch for realism            } else {
               // The Main Disk (Front part)
               x = diskX;
               y = diskZ * 0.12; 
