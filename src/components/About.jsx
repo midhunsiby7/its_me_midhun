@@ -40,7 +40,7 @@ function About() {
                     <div>
                       <span className="about__timeline-year">2023 — Present</span>
                       <h4>Bachelor of Computer Applications</h4>
-                      <p>BVM Holy Cross College, Cherpunkal</p>
+                      <p><a href="https://bvmcollege.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.3)', textUnderlineOffset: '4px' }}>BVM Holy Cross College, Cherpunkal</a></p>
                     </div>
                   </div>
                 </div>
@@ -53,7 +53,7 @@ function About() {
                     <div>
                       <span className="about__timeline-year">Completed</span>
                       <h4>Higher Secondary & Schooling</h4>
-                      <p>St. Antony's Public School, Anakkal</p>
+                      <p><a href="https://www.saps.ac.in/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.3)', textUnderlineOffset: '4px' }}>St. Antony's Public School, Anakkal</a></p>
                     </div>
                   </div>
                 </div>

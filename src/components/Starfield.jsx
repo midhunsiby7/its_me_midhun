@@ -411,7 +411,7 @@ function Starfield() {
       drawBlackHole(time);
 
       // Shooting stars (spawning from all directions)
-      if (Math.random() < 0.015) { // Increased frequency
+      if (Math.random() < 0.012) { // Reduced frequency from 0.015 to 0.012 (20% reduction)
         const side = Math.floor(Math.random() * 4);
         let x, y, vx, vy;
         const speed = Math.random() * 3 + 2;
