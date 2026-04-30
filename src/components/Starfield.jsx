@@ -220,74 +220,66 @@ function Starfield() {
       };
     };
 
-    // ── Accretion disk (Schwarzschild style) ──
+    // ── Accretion disk (smooth gradient fills, not strokes) ──
     const drawAccretionDisk = (bh, time, pass) => {
       const r = bh.radius;
       ctx.save();
       ctx.translate(bh.x, bh.y);
       ctx.globalCompositeOperation = 'screen';
 
-      const diskLayers = 20;
-      for (let l = 0; l < diskLayers; l++) {
-        const rDisk = r * (1.8 + l * 0.22);
-        const t = l / diskLayers;
-        // Color: inner=white-gold, mid=orange, outer=deep red
-        const hue = 20 + t * 15;
-        const lightness = 80 - t * 30;
-        const baseAlpha = (0.3 - t * 0.12);
+      if (pass === 'back') {
+        // Lensed halo — smooth glowing ring around the black hole
+        for (let l = 0; l < 6; l++) {
+          const haloR = r * 1.15 + l * 3.5;
+          const alpha = 0.06 - l * 0.008;
+          const hue = 20 + l * 5;
 
-        if (pass === 'back') {
-          // Lensed halo — the back half of disk bent over the top/bottom
-          const haloR = r * 1.02 + l * 2.0;
           ctx.beginPath();
-          for (let s = 0; s <= 80; s++) {
-            const a = (s / 80) * Math.PI * 2;
-            const x = Math.cos(a) * haloR;
-            const y = Math.sin(a) * haloR * 1.12;
-
-            // Doppler beaming: left side brighter
-            const beam = 1.0 + Math.cos(a + Math.PI) * 0.5;
-            const alpha = baseAlpha * 0.25 * beam;
-            ctx.strokeStyle = `hsla(${hue}, 95%, ${lightness}%, ${alpha})`;
-            ctx.lineWidth = 1.0;
-
-            if (s === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-
-            if (s % 8 === 0) { ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y); }
-          }
-          ctx.stroke();
-
-        } else if (pass === 'front') {
-          // Direct disk — thin horizontal ellipse in front
-          const flowOffset = time * (1.5 + l * 0.06);
-          ctx.beginPath();
-          for (let s = 0; s <= 80; s++) {
-            const a = (s / 80) * Math.PI;
-            const fa = a + flowOffset;
-            const x = Math.cos(fa) * rDisk;
-            const y = Math.sin(fa) * rDisk * 0.1;
-
-            const beam = 1.0 + Math.cos(fa + Math.PI) * 0.6;
-            const alpha = baseAlpha * beam;
-            ctx.strokeStyle = `hsla(${hue}, 95%, ${lightness}%, ${alpha})`;
-            ctx.lineWidth = 1.4 - t * 0.6;
-
-            const nx = x + Math.sin(time * 2 + s * 0.4 + l) * 1.0;
-            const ny = y + Math.sin(time * 3 + s * 0.3 + l) * 0.3;
-
-            if (s === 0) ctx.moveTo(nx, ny);
-            else ctx.lineTo(nx, ny);
-
-            if (s % 8 === 0) { ctx.stroke(); ctx.beginPath(); ctx.moveTo(nx, ny); }
-          }
-          ctx.stroke();
+          ctx.ellipse(0, 0, haloR, haloR * 1.1, 0, 0, Math.PI * 2);
+          const g = ctx.createRadialGradient(0, 0, haloR * 0.7, 0, 0, haloR);
+          g.addColorStop(0, `hsla(${hue}, 90%, 70%, 0)`);
+          g.addColorStop(0.6, `hsla(${hue}, 90%, 65%, ${alpha})`);
+          g.addColorStop(1, `hsla(${hue}, 85%, 50%, 0)`);
+          ctx.fillStyle = g;
+          ctx.fill();
         }
+
+      } else if (pass === 'front') {
+        // Main disk — smooth horizontal ellipses with Doppler beaming
+        for (let l = 0; l < 10; l++) {
+          const rDisk = r * (2.0 + l * 0.35);
+          const t = l / 10;
+          const hue = 18 + t * 18;
+          const alpha = (0.12 - t * 0.06);
+
+          // Doppler asymmetry: left brighter via gradient offset
+          const beamShift = rDisk * 0.3;
+          const g = ctx.createLinearGradient(-rDisk, 0, rDisk, 0);
+          g.addColorStop(0, `hsla(${hue + 10}, 95%, 80%, ${alpha * 1.6})`);
+          g.addColorStop(0.35, `hsla(${hue}, 90%, 70%, ${alpha})`);
+          g.addColorStop(0.7, `hsla(${hue - 5}, 85%, 55%, ${alpha * 0.4})`);
+          g.addColorStop(1, `hsla(${hue - 5}, 80%, 40%, ${alpha * 0.1})`);
+
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rDisk, rDisk * 0.08, 0, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+
+        // Inner bright ring (thin, smooth)
+        const innerG = ctx.createRadialGradient(0, 0, r * 1.3, 0, 0, r * 2.2);
+        innerG.addColorStop(0, 'hsla(30, 95%, 75%, 0.12)');
+        innerG.addColorStop(0.5, 'hsla(25, 90%, 65%, 0.06)');
+        innerG.addColorStop(1, 'hsla(20, 80%, 50%, 0)');
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r * 2.2, r * 0.18, 0, 0, Math.PI * 2);
+        ctx.fillStyle = innerG;
+        ctx.fill();
       }
       ctx.restore();
     };
 
-    // ── Black hole core ──
+    // ── Black hole core (reduced opacity) ──
     const drawBlackHole = (time) => {
       if (!blackHole) return;
       const bh = blackHole;
@@ -307,31 +299,31 @@ function Starfield() {
       ctx.translate(bh.x, bh.y);
       ctx.globalCompositeOperation = 'source-over';
 
-      // Photon sphere glow
-      const pg = ctx.createRadialGradient(0, 0, bh.radius * 0.88, 0, 0, bh.radius * 1.35);
+      // Subtle photon sphere glow (reduced opacity)
+      const pg = ctx.createRadialGradient(0, 0, bh.radius * 0.9, 0, 0, bh.radius * 1.3);
       pg.addColorStop(0, '#000000');
-      pg.addColorStop(0.30, 'rgba(255, 80, 0, 0.45)');
-      pg.addColorStop(0.46, 'rgba(255, 255, 220, 0.9)');
-      pg.addColorStop(0.62, 'rgba(255, 180, 50, 0.35)');
+      pg.addColorStop(0.35, 'rgba(255, 100, 20, 0.2)');
+      pg.addColorStop(0.50, 'rgba(255, 220, 150, 0.45)');
+      pg.addColorStop(0.65, 'rgba(255, 150, 50, 0.15)');
       pg.addColorStop(1, 'transparent');
       ctx.fillStyle = pg;
       ctx.beginPath();
-      ctx.arc(0, 0, bh.radius * 1.35, 0, Math.PI * 2);
+      ctx.arc(0, 0, bh.radius * 1.3, 0, Math.PI * 2);
       ctx.fill();
 
       // Event horizon — the void
       const vg = ctx.createRadialGradient(0, 0, 0, 0, 0, bh.radius);
       vg.addColorStop(0, '#000000');
       vg.addColorStop(0.92, '#000001');
-      vg.addColorStop(1, '#0a0400');
+      vg.addColorStop(1, '#060300');
       ctx.fillStyle = vg;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Thin photon ring
-      ctx.strokeStyle = 'rgba(255, 240, 200, 0.85)';
-      ctx.lineWidth = 0.5;
+      // Thin photon ring (subtle)
+      ctx.strokeStyle = 'rgba(255, 220, 160, 0.4)';
+      ctx.lineWidth = 0.4;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius * 1.02, 0, Math.PI * 2);
       ctx.stroke();
