@@ -1,9 +1,7 @@
 .app {
   min-height: 100vh;
   position: relative;
-  cursor: none;
 }
 
 @media (max-width: 768px) {
-  .app { cursor: auto; }
 }

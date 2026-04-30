@@ -237,7 +237,7 @@ function Starfield() {
           const holeWidth = r * (1.1 + t * 0.2); // Inner cutout to leave the shadow
           const holeHeight = r * (0.9 + t * 0.2);
           
-          const alpha = 0.08 - t * 0.05;
+          const alpha = 0.05 - t * 0.03;
           const hue = 30 - t * 15;
 
           ctx.beginPath();
@@ -266,7 +266,7 @@ function Starfield() {
           const holeWidth = r * (1.0 + t * 0.1);
           const holeHeight = r * (0.8 + t * 0.1);
           
-          const alpha = 0.04 - t * 0.03;
+          const alpha = 0.02 - t * 0.015;
           const hue = 25 - t * 10;
 
           ctx.beginPath();
@@ -291,7 +291,7 @@ function Starfield() {
           const rDisk = r * (1.8 + l * 0.3);
           const t = l / 15;
           const hue = 25 - t * 15;
-          const alpha = (0.15 - t * 0.08);
+          const alpha = (0.09 - t * 0.05);
 
           // Doppler beaming: left side brighter
           const g = ctx.createLinearGradient(-rDisk, 0, rDisk, 0);
@@ -309,8 +309,8 @@ function Starfield() {
 
         // Inner bright glow connecting disk to shadow smoothly
         const innerG = ctx.createRadialGradient(0, 0, r * 1.1, 0, 0, r * 2.2);
-        innerG.addColorStop(0, 'hsla(35, 95%, 85%, 0.15)');
-        innerG.addColorStop(0.4, 'hsla(28, 90%, 75%, 0.08)');
+        innerG.addColorStop(0, 'hsla(35, 95%, 85%, 0.08)');
+        innerG.addColorStop(0.4, 'hsla(28, 90%, 75%, 0.04)');
         innerG.addColorStop(1, 'hsla(20, 80%, 55%, 0)');
         ctx.beginPath();
         ctx.ellipse(0, 0, r * 2.2, r * 0.18, 0, 0, Math.PI * 2);
@@ -343,9 +343,9 @@ function Starfield() {
       // Subtle photon sphere glow (reduced opacity)
       const pg = ctx.createRadialGradient(0, 0, bh.radius * 0.9, 0, 0, bh.radius * 1.3);
       pg.addColorStop(0, '#000000');
-      pg.addColorStop(0.35, 'rgba(255, 100, 20, 0.2)');
-      pg.addColorStop(0.50, 'rgba(255, 220, 150, 0.45)');
-      pg.addColorStop(0.65, 'rgba(255, 150, 50, 0.15)');
+      pg.addColorStop(0.35, 'rgba(255, 100, 20, 0.12)');
+      pg.addColorStop(0.50, 'rgba(255, 220, 150, 0.25)');
+      pg.addColorStop(0.65, 'rgba(255, 150, 50, 0.08)');
       pg.addColorStop(1, 'transparent');
       ctx.fillStyle = pg;
       ctx.beginPath();
@@ -363,7 +363,7 @@ function Starfield() {
       ctx.fill();
 
       // Thin photon ring (subtle)
-      ctx.strokeStyle = 'rgba(255, 220, 160, 0.4)';
+      ctx.strokeStyle = 'rgba(255, 220, 160, 0.2)';
       ctx.lineWidth = 0.4;
       ctx.beginPath();
       ctx.arc(0, 0, bh.radius * 1.02, 0, Math.PI * 2);

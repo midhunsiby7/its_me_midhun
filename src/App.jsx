@@ -37,7 +37,8 @@ function App() {
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
-    let craftX = mouseX, craftY = mouseY;
+    let craftX = mouseX + 30, craftY = mouseY + 30;
+    let vx = 0, vy = 0;
     let craftAngle = 0;
     let glowX = mouseX, glowY = mouseY;
 
@@ -64,46 +65,62 @@ function App() {
     document.addEventListener('mousemove', onMove);
 
     const loop = () => {
-      // Smooth follow — spacecraft lags behind cursor
-      const dx = mouseX - craftX;
-      const dy = mouseY - craftY;
-      craftX += dx * 0.08;
-      craftY += dy * 0.08;
+      // Offset target so the native Windows cursor is fully visible
+      const targetX = mouseX + 25;
+      const targetY = mouseY + 25;
 
-      // Rotate towards movement direction
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > 2) {
-        const targetAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-        // Smooth angle interpolation
+      // Realistic spring physics for smooth, organic floating movement
+      const ax = (targetX - craftX) * 0.015; // Spring stiffness
+      const ay = (targetY - craftY) * 0.015;
+      vx += ax;
+      vy += ay;
+      vx *= 0.88; // Damping (friction)
+      vy *= 0.88;
+      
+      craftX += vx;
+      craftY += vy;
+
+      // Rotate naturally towards the current velocity vector
+      const speed = Math.sqrt(vx * vx + vy * vy);
+      if (speed > 0.5) {
+        const targetAngle = Math.atan2(vy, vx) * (180 / Math.PI) + 90;
         let angleDiff = targetAngle - craftAngle;
-        if (angleDiff > 180) angleDiff -= 360;
-        if (angleDiff < -180) angleDiff += 360;
-        craftAngle += angleDiff * 0.1;
+        
+        // Normalize angle to prevent 360-degree 'teleport' spins
+        while (angleDiff > 180) angleDiff -= 360;
+        while (angleDiff < -180) angleDiff += 360;
+        
+        craftAngle += angleDiff * 0.08; // Smooth, slow rotation easing
+      } else {
+        // Very subtle idle floating rotation when still
+        craftAngle += Math.sin(Date.now() * 0.002) * 0.2;
       }
 
       craft.style.left = craftX + 'px';
       craft.style.top = craftY + 'px';
       craft.style.transform = `translate(-50%, -50%) rotate(${craftAngle}deg)`;
 
-      // Glow follows even slower
-      glowX += (mouseX - glowX) * 0.04;
-      glowY += (mouseY - glowY) * 0.04;
+      // Glow follows the native cursor smoothly
+      glowX += (mouseX - glowX) * 0.15;
+      glowY += (mouseY - glowY) * 0.15;
       glow.style.left = glowX + 'px';
       glow.style.top = glowY + 'px';
 
-      // Emit trail particles when moving
-      if (dist > 3) {
+      // Emit trail particles based on speed
+      if (speed > 1.5) {
         const angleRad = (craftAngle - 90) * (Math.PI / 180);
         // Engine position (behind the spacecraft)
-        const engineX = craftX - Math.cos(angleRad) * 14;
-        const engineY = craftY - Math.sin(angleRad) * 14;
+        const engineX = craftX - Math.cos(angleRad) * 16;
+        const engineY = craftY - Math.sin(angleRad) * 16;
+        
+        // Add particle with slight randomness
         particles.push({
-          x: engineX + (Math.random() - 0.5) * 4,
-          y: engineY + (Math.random() - 0.5) * 4,
-          vx: -Math.cos(angleRad) * (Math.random() * 1.5 + 0.5),
-          vy: -Math.sin(angleRad) * (Math.random() * 1.5 + 0.5),
-          alpha: 0.6,
-          size: Math.random() * 2.5 + 1,
+          x: engineX + (Math.random() - 0.5) * 6,
+          y: engineY + (Math.random() - 0.5) * 6,
+          vx: -Math.cos(angleRad) * (Math.random() * 2 + 1) + (Math.random() - 0.5) * 0.5,
+          vy: -Math.sin(angleRad) * (Math.random() * 2 + 1) + (Math.random() - 0.5) * 0.5,
+          alpha: 0.7,
+          size: Math.random() * 3 + 1.5,
           color: Math.random() > 0.5 ? '139, 92, 246' : '6, 182, 212',
         });
       }
@@ -118,7 +135,7 @@ function App() {
         tCtx.fill();
         p.x += p.vx;
         p.y += p.vy;
-        p.alpha -= 0.02;
+        p.alpha -= 0.015;
         p.size *= 0.98;
       });
 
