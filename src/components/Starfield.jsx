@@ -220,59 +220,94 @@ function Starfield() {
       };
     };
 
-    // ── Accretion disk (smooth gradient fills, not strokes) ──
+    // ── Accretion disk (Gargantua-style: lensed arc wraps over the shadow) ──
     const drawAccretionDisk = (bh, time, pass) => {
       const r = bh.radius;
       ctx.save();
       ctx.translate(bh.x, bh.y);
       ctx.globalCompositeOperation = 'screen';
 
-      if (pass === 'back') {
-        // Lensed halo — smooth glowing ring around the black hole
-        for (let l = 0; l < 6; l++) {
-          const haloR = r * 1.15 + l * 3.5;
-          const alpha = 0.06 - l * 0.008;
-          const hue = 20 + l * 5;
+      const diskExtent = r * 5.5; // how far the horizontal disk extends
 
+      if (pass === 'back') {
+        // ── Lensed back-disk: wraps over the TOP of the shadow ──
+        // This is the key Gargantua feature: the back of the disk is bent
+        // by gravity so it appears as an arc above the event horizon,
+        // connecting to the horizontal disk on both sides.
+        for (let l = 0; l < 8; l++) {
+          const thickness = r * 0.12 + l * 0.8;
+          const arcHeight = r * 1.15 + l * 1.2; // how high above center
+          const alpha = 0.10 - l * 0.01;
+          const hue = 25 + l * 3;
+
+          // Draw the lensed arc: from right disk edge, up and over, to left disk edge
+          const arcWidth = r * 1.8 + l * 2.0; // horizontal span of the arc
           ctx.beginPath();
-          ctx.ellipse(0, 0, haloR, haloR * 1.1, 0, 0, Math.PI * 2);
-          const g = ctx.createRadialGradient(0, 0, haloR * 0.7, 0, 0, haloR);
-          g.addColorStop(0, `hsla(${hue}, 90%, 70%, 0)`);
-          g.addColorStop(0.6, `hsla(${hue}, 90%, 65%, ${alpha})`);
-          g.addColorStop(1, `hsla(${hue}, 85%, 50%, 0)`);
-          ctx.fillStyle = g;
-          ctx.fill();
+          // Start from right side of disk, arc up over the shadow, end at left
+          ctx.ellipse(0, -r * 0.15, arcWidth, arcHeight, 0, 0, Math.PI);
+          
+          const g = ctx.createLinearGradient(-arcWidth, 0, arcWidth, 0);
+          g.addColorStop(0, `hsla(${hue + 8}, 90%, 75%, ${alpha * 1.4})`);
+          g.addColorStop(0.3, `hsla(${hue}, 92%, 80%, ${alpha * 1.2})`);
+          g.addColorStop(0.5, `hsla(${hue}, 90%, 70%, ${alpha})`);
+          g.addColorStop(0.7, `hsla(${hue - 3}, 85%, 60%, ${alpha * 0.6})`);
+          g.addColorStop(1, `hsla(${hue - 5}, 80%, 45%, ${alpha * 0.2})`);
+          
+          ctx.strokeStyle = g;
+          ctx.lineWidth = thickness;
+          ctx.stroke();
+        }
+
+        // ── Dimmer lensed arc BELOW the shadow (same concept, bottom half) ──
+        for (let l = 0; l < 5; l++) {
+          const thickness = r * 0.08 + l * 0.5;
+          const arcHeight = r * 0.9 + l * 0.8;
+          const alpha = 0.05 - l * 0.008;
+          const hue = 20 + l * 4;
+
+          const arcWidth = r * 1.5 + l * 1.5;
+          ctx.beginPath();
+          ctx.ellipse(0, r * 0.15, arcWidth, arcHeight, 0, Math.PI, Math.PI * 2);
+          
+          const g = ctx.createLinearGradient(-arcWidth, 0, arcWidth, 0);
+          g.addColorStop(0, `hsla(${hue + 5}, 85%, 70%, ${alpha * 1.3})`);
+          g.addColorStop(0.5, `hsla(${hue}, 80%, 60%, ${alpha})`);
+          g.addColorStop(1, `hsla(${hue - 3}, 75%, 45%, ${alpha * 0.3})`);
+          
+          ctx.strokeStyle = g;
+          ctx.lineWidth = thickness;
+          ctx.stroke();
         }
 
       } else if (pass === 'front') {
-        // Main disk — smooth horizontal ellipses with Doppler beaming
-        for (let l = 0; l < 10; l++) {
-          const rDisk = r * (2.0 + l * 0.35);
-          const t = l / 10;
-          const hue = 18 + t * 18;
-          const alpha = (0.12 - t * 0.06);
+        // ── Main horizontal accretion disk ──
+        for (let l = 0; l < 12; l++) {
+          const rDisk = r * (1.8 + l * 0.35);
+          const t = l / 12;
+          const hue = 20 + t * 16;
+          const alpha = (0.14 - t * 0.07);
 
-          // Doppler asymmetry: left brighter via gradient offset
-          const beamShift = rDisk * 0.3;
+          // Doppler beaming: left side brighter
           const g = ctx.createLinearGradient(-rDisk, 0, rDisk, 0);
-          g.addColorStop(0, `hsla(${hue + 10}, 95%, 80%, ${alpha * 1.6})`);
-          g.addColorStop(0.35, `hsla(${hue}, 90%, 70%, ${alpha})`);
-          g.addColorStop(0.7, `hsla(${hue - 5}, 85%, 55%, ${alpha * 0.4})`);
-          g.addColorStop(1, `hsla(${hue - 5}, 80%, 40%, ${alpha * 0.1})`);
+          g.addColorStop(0, `hsla(${hue + 10}, 95%, 82%, ${alpha * 1.8})`);
+          g.addColorStop(0.3, `hsla(${hue + 5}, 92%, 75%, ${alpha * 1.2})`);
+          g.addColorStop(0.5, `hsla(${hue}, 88%, 65%, ${alpha})`);
+          g.addColorStop(0.75, `hsla(${hue - 3}, 82%, 50%, ${alpha * 0.35})`);
+          g.addColorStop(1, `hsla(${hue - 5}, 75%, 40%, ${alpha * 0.08})`);
 
           ctx.beginPath();
-          ctx.ellipse(0, 0, rDisk, rDisk * 0.08, 0, 0, Math.PI * 2);
+          ctx.ellipse(0, 0, rDisk, rDisk * 0.07, 0, 0, Math.PI * 2);
           ctx.fillStyle = g;
           ctx.fill();
         }
 
-        // Inner bright ring (thin, smooth)
-        const innerG = ctx.createRadialGradient(0, 0, r * 1.3, 0, 0, r * 2.2);
-        innerG.addColorStop(0, 'hsla(30, 95%, 75%, 0.12)');
-        innerG.addColorStop(0.5, 'hsla(25, 90%, 65%, 0.06)');
+        // Inner bright glow connecting disk to shadow
+        const innerG = ctx.createRadialGradient(0, 0, r * 1.1, 0, 0, r * 2.0);
+        innerG.addColorStop(0, 'hsla(35, 95%, 80%, 0.10)');
+        innerG.addColorStop(0.4, 'hsla(28, 90%, 70%, 0.06)');
         innerG.addColorStop(1, 'hsla(20, 80%, 50%, 0)');
         ctx.beginPath();
-        ctx.ellipse(0, 0, r * 2.2, r * 0.18, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, r * 2.0, r * 0.15, 0, 0, Math.PI * 2);
         ctx.fillStyle = innerG;
         ctx.fill();
       }
