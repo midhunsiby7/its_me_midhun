@@ -37,9 +37,11 @@ function App() {
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
-    let craftX = mouseX + 30, craftY = mouseY + 30;
+    let lastMouseX = mouseX, lastMouseY = mouseY;
+    let craftX = mouseX, craftY = mouseY;
     let vx = 0, vy = 0;
     let craftAngle = 0;
+    let trailAngle = 0;
     let glowX = mouseX, glowY = mouseY;
 
     // Trail particles
@@ -59,30 +61,39 @@ function App() {
     let particles = [];
 
     const onMove = (e) => {
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
       mouseX = e.clientX;
       mouseY = e.clientY;
+      
+      const dx = mouseX - lastMouseX;
+      const dy = mouseY - lastMouseY;
+      if (Math.sqrt(dx * dx + dy * dy) > 1.5) {
+        trailAngle = Math.atan2(dy, dx);
+      }
     };
     document.addEventListener('mousemove', onMove);
 
     const loop = () => {
-      // Offset target so the native Windows cursor is fully visible
-      const targetX = mouseX + 25;
-      const targetY = mouseY + 25;
+      // Spacecraft trails consistently BEHIND the direction of mouse movement
+      const trailDistance = 55; // Fixed space between cursor and Endurance
+      const targetX = mouseX - Math.cos(trailAngle) * trailDistance;
+      const targetY = mouseY - Math.sin(trailAngle) * trailDistance;
 
-      // Realistic spring physics for smooth, organic floating movement
-      const ax = (targetX - craftX) * 0.015; // Spring stiffness
-      const ay = (targetY - craftY) * 0.015;
+      // Realistic, slow spring physics for a heavy, massive spacecraft feel
+      const ax = (targetX - craftX) * 0.007; // Very soft spring
+      const ay = (targetY - craftY) * 0.007;
       vx += ax;
       vy += ay;
-      vx *= 0.88; // Damping (friction)
-      vy *= 0.88;
+      vx *= 0.93; // High friction so it floats smoothly
+      vy *= 0.93;
       
       craftX += vx;
       craftY += vy;
 
       // Rotate naturally towards the current velocity vector
       const speed = Math.sqrt(vx * vx + vy * vy);
-      if (speed > 0.5) {
+      if (speed > 0.1) {
         const targetAngle = Math.atan2(vy, vx) * (180 / Math.PI) + 90;
         let angleDiff = targetAngle - craftAngle;
         
@@ -90,10 +101,10 @@ function App() {
         while (angleDiff > 180) angleDiff -= 360;
         while (angleDiff < -180) angleDiff += 360;
         
-        craftAngle += angleDiff * 0.08; // Smooth, slow rotation easing
+        craftAngle += angleDiff * 0.05; // Very slow, graceful rotation easing
       } else {
         // Very subtle idle floating rotation when still
-        craftAngle += Math.sin(Date.now() * 0.002) * 0.2;
+        craftAngle += Math.sin(Date.now() * 0.001) * 0.1;
       }
 
       craft.style.left = craftX + 'px';
@@ -107,11 +118,11 @@ function App() {
       glow.style.top = glowY + 'px';
 
       // Emit trail particles based on speed
-      if (speed > 1.5) {
+      if (speed > 1.2) {
         const angleRad = (craftAngle - 90) * (Math.PI / 180);
-        // Engine position (behind the spacecraft)
-        const engineX = craftX - Math.cos(angleRad) * 16;
-        const engineY = craftY - Math.sin(angleRad) * 16;
+        // Engine position (behind the Endurance ring, radius ~24)
+        const engineX = craftX - Math.cos(angleRad) * 22;
+        const engineY = craftY - Math.sin(angleRad) * 22;
         
         // Add particle with slight randomness
         particles.push({
@@ -181,25 +192,37 @@ function App() {
     <div className="app">
       <Starfield />
       <div ref={glowRef} className="cursor-glow" />
-      {/* Realistic spacecraft SVG cursor — larger and detailed */}
-      <svg ref={craftRef} className="cursor-spacecraft" width="36" height="44" viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Main fuselage */}
-        <path d="M18 2 C18 2 22 10 23 16 L24 28 L22 32 L18 36 L14 32 L12 28 L13 16 C14 10 18 2 18 2Z" fill="rgba(180, 160, 220, 0.6)" stroke="rgba(139, 92, 246, 0.8)" strokeWidth="0.6"/>
-        {/* Cockpit window */}
-        <ellipse cx="18" cy="12" rx="3" ry="4" fill="rgba(6, 182, 212, 0.35)" stroke="rgba(6, 182, 212, 0.5)" strokeWidth="0.4"/>
-        <ellipse cx="18" cy="11" rx="1.5" ry="2" fill="rgba(100, 220, 255, 0.25)"/>
-        {/* Left wing */}
-        <path d="M12 22 L4 30 L6 32 L12 28Z" fill="rgba(139, 92, 246, 0.5)" stroke="rgba(139, 92, 246, 0.6)" strokeWidth="0.4"/>
-        {/* Right wing */}
-        <path d="M24 22 L32 30 L30 32 L24 28Z" fill="rgba(139, 92, 246, 0.5)" stroke="rgba(139, 92, 246, 0.6)" strokeWidth="0.4"/>
-        {/* Center stripe */}
-        <path d="M18 6 L18 30" stroke="rgba(200, 180, 255, 0.2)" strokeWidth="0.8"/>
-        {/* Engine glow — left */}
-        <ellipse cx="15" cy="35" rx="2.5" ry="4" fill="rgba(6, 182, 212, 0.2)"/>
-        <ellipse cx="15" cy="34" rx="1.2" ry="2.5" fill="rgba(139, 92, 246, 0.25)"/>
-        {/* Engine glow — right */}
-        <ellipse cx="21" cy="35" rx="2.5" ry="4" fill="rgba(6, 182, 212, 0.2)"/>
-        <ellipse cx="21" cy="34" rx="1.2" ry="2.5" fill="rgba(139, 92, 246, 0.25)"/>
+      {/* Endurance Spacecraft SVG (Interstellar) */}
+      <svg ref={craftRef} className="cursor-spacecraft" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 0px 4px rgba(255,255,255,0.2))' }}>
+        {/* Central Hub */}
+        <circle cx="28" cy="28" r="4" fill="rgba(200, 200, 210, 0.9)" />
+        <circle cx="28" cy="28" r="2" fill="rgba(100, 100, 110, 0.8)" />
+        
+        {/* Connection Spokes */}
+        <line x1="28" y1="12" x2="28" y2="44" stroke="rgba(160, 160, 175, 0.7)" strokeWidth="1.5" />
+        <line x1="12" y1="28" x2="44" y2="28" stroke="rgba(160, 160, 175, 0.7)" strokeWidth="1.5" />
+        
+        {/* Main Ring */}
+        <circle cx="28" cy="28" r="16" stroke="rgba(140, 140, 155, 0.8)" strokeWidth="1.5" />
+        
+        {/* 12 Ring Modules */}
+        {Array.from({ length: 12 }).map((_, i) => {
+          const angle = (i * 30) * (Math.PI / 180);
+          const x = 28 + Math.cos(angle) * 16;
+          const y = 28 + Math.sin(angle) * 16;
+          const rot = i * 30 + 90; // Align module tangent to the ring
+          return (
+            <g key={i} transform={`rotate(${rot} ${x} ${y})`}>
+              <rect x={x - 3.5} y={y - 2.5} width="7" height="5" rx="0.5" fill="rgba(230, 230, 245, 0.95)" stroke="rgba(80, 80, 95, 0.8)" strokeWidth="0.5" />
+              <line x1={x - 1} y1={y - 2.5} x2={x - 1} y2={y + 2.5} stroke="rgba(80, 80, 95, 0.5)" strokeWidth="0.5" />
+              <line x1={x + 1} y1={y - 2.5} x2={x + 1} y2={y + 2.5} stroke="rgba(80, 80, 95, 0.5)" strokeWidth="0.5" />
+            </g>
+          );
+        })}
+        
+        {/* Subtle Engine Glow at the bottom rear module */}
+        <ellipse cx="28" cy="46" rx="3.5" ry="5" fill="rgba(6, 182, 212, 0.3)" filter="blur(1px)" />
+        <ellipse cx="28" cy="45" rx="1.5" ry="3" fill="rgba(139, 92, 246, 0.4)" />
       </svg>
       <Navbar activePage={activePage} onNavigate={handleNavigate} />
       <div className="page-wrapper" ref={pageRef}>
