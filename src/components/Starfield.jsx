@@ -410,38 +410,87 @@ function Starfield() {
 
       drawBlackHole(time);
 
-      // Shooting stars (kept as-is, user approved)
-      if (Math.random() < 0.002) {
+      // Shooting stars (spawning from all directions)
+      if (Math.random() < 0.015) { // Increased frequency
+        const side = Math.floor(Math.random() * 4);
+        let x, y, vx, vy;
+        const speed = Math.random() * 3 + 2;
+        
+        if (side === 0) { // top
+          x = Math.random() * canvas.width; y = -10;
+          const a = (Math.random() * 140 + 20) * (Math.PI / 180);
+          vx = Math.cos(a) * speed; vy = Math.sin(a) * speed;
+        } else if (side === 1) { // right
+          x = canvas.width + 10; y = Math.random() * canvas.height;
+          const a = (Math.random() * 140 + 110) * (Math.PI / 180);
+          vx = Math.cos(a) * speed; vy = Math.sin(a) * speed;
+        } else if (side === 2) { // bottom
+          x = Math.random() * canvas.width; y = canvas.height + 10;
+          const a = (Math.random() * 140 + 200) * (Math.PI / 180);
+          vx = Math.cos(a) * speed; vy = Math.sin(a) * speed;
+        } else { // left
+          x = -10; y = Math.random() * canvas.height;
+          const a = (Math.random() * 140 - 70) * (Math.PI / 180);
+          vx = Math.cos(a) * speed; vy = Math.sin(a) * speed;
+        }
+        
         shootingStars.push({
-          x: Math.random() * canvas.width, y: 0,
-          length: Math.random() * 80 + 40,
-          speed: Math.random() * 5 + 3,
-          angle: (Math.random() * 30 + 60) * (Math.PI / 180),
+          x, y, vx, vy,
           alpha: 1,
+          history: [] // For curved gravity trails
         });
       }
+
       shootingStars = shootingStars.filter(s => s.alpha > 0);
       shootingStars.forEach(s => {
-        const h = getLensedPos(s.x, s.y, blackHole);
-        const t = getLensedPos(
-          s.x - Math.cos(s.angle) * s.length,
-          s.y - Math.sin(s.angle) * s.length,
-          blackHole
-        );
-        if (h && t) {
-          const g = ctx.createLinearGradient(h.x, h.y, t.x, t.y);
-          g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
-          g.addColorStop(1, 'rgba(255,200,100,0)');
-          ctx.beginPath();
-          ctx.moveTo(h.x, h.y);
-          ctx.lineTo(t.x, t.y);
-          ctx.strokeStyle = g;
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
+        // Physical gravity deflection from the black hole
+        const dx = blackHole.x - s.x;
+        const dy = blackHole.y - s.y;
+        const distSq = dx * dx + dy * dy;
+        const dist = Math.sqrt(distSq);
+        
+        // Apply gravitational pull if close, but not inside
+        if (dist > blackHole.radius * 0.8) {
+          const force = (blackHole.radius * 90) / Math.max(distSq, 100);
+          s.vx += (dx / dist) * force;
+          s.vy += (dy / dist) * force;
+        } else {
+          s.alpha -= 0.1; // Fade fast if sucked in
         }
-        s.x += Math.cos(s.angle) * s.speed;
-        s.y += Math.sin(s.angle) * s.speed;
+        
+        // Track history for drawing
+        s.history.unshift({ x: s.x, y: s.y });
+        if (s.history.length > 25) s.history.pop();
+        
+        s.x += s.vx;
+        s.y += s.vy;
         s.alpha -= 0.006;
+
+        // Draw curved, lensed trail
+        if (s.history.length > 1) {
+          ctx.beginPath();
+          let firstLensed = null;
+          let lastLensed = null;
+          
+          for (let i = 0; i < s.history.length; i++) {
+            const pt = getLensedPos(s.history[i].x, s.history[i].y, blackHole);
+            if (pt) {
+              if (!firstLensed) firstLensed = pt;
+              if (i === 0) ctx.moveTo(pt.x, pt.y);
+              else ctx.lineTo(pt.x, pt.y);
+              lastLensed = pt;
+            }
+          }
+          
+          if (firstLensed && lastLensed) {
+            const g = ctx.createLinearGradient(firstLensed.x, firstLensed.y, lastLensed.x, lastLensed.y);
+            g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
+            g.addColorStop(1, 'rgba(255,200,100,0)');
+            ctx.strokeStyle = g;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          }
+        }
       });
 
       animationId = requestAnimationFrame(animate);
