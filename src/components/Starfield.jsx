@@ -236,7 +236,7 @@ function Starfield() {
           const arcHeight = r * (1.1 + t * 1.5);
           const holeWidth = r * (1.1 + t * 0.2); // Inner cutout to leave the shadow
           const holeHeight = r * (0.9 + t * 0.2);
-          
+
           const alpha = 0.05 - t * 0.03;
           const hue = 30 - t * 15;
 
@@ -246,14 +246,14 @@ function Starfield() {
           // Inner curve (cutout for the shadow) going backwards
           ctx.ellipse(0, -r * 0.05, holeWidth, holeHeight, 0, 0, Math.PI, true);
           ctx.closePath();
-          
+
           const g = ctx.createLinearGradient(-arcWidth, 0, arcWidth, 0);
           g.addColorStop(0, `hsla(${hue + 10}, 95%, 85%, ${alpha * 1.5})`);
           g.addColorStop(0.3, `hsla(${hue + 5}, 90%, 75%, ${alpha * 1.2})`);
           g.addColorStop(0.5, `hsla(${hue}, 85%, 65%, ${alpha})`);
           g.addColorStop(0.7, `hsla(${hue - 5}, 80%, 55%, ${alpha * 0.6})`);
           g.addColorStop(1, `hsla(${hue - 10}, 75%, 45%, ${alpha * 0.2})`);
-          
+
           ctx.fillStyle = g;
           ctx.fill();
         }
@@ -265,7 +265,7 @@ function Starfield() {
           const arcHeight = r * (0.9 + t * 1.0);
           const holeWidth = r * (1.0 + t * 0.1);
           const holeHeight = r * (0.8 + t * 0.1);
-          
+
           const alpha = 0.02 - t * 0.015;
           const hue = 25 - t * 10;
 
@@ -275,12 +275,12 @@ function Starfield() {
           // Inner curve (cutout) going backwards
           ctx.ellipse(0, r * 0.05, holeWidth, holeHeight, 0, Math.PI, 0, true);
           ctx.closePath();
-          
+
           const g = ctx.createLinearGradient(-arcWidth, 0, arcWidth, 0);
           g.addColorStop(0, `hsla(${hue + 5}, 90%, 75%, ${alpha * 1.3})`);
           g.addColorStop(0.5, `hsla(${hue}, 85%, 65%, ${alpha})`);
           g.addColorStop(1, `hsla(${hue - 5}, 80%, 50%, ${alpha * 0.3})`);
-          
+
           ctx.fillStyle = g;
           ctx.fill();
         }
@@ -379,7 +379,7 @@ function Starfield() {
     const getStarColor = (temp, alpha) => {
       if (temp === 'bright') return `rgba(200, 220, 255, ${alpha})`;   // blue-white
       if (temp === 'medium') return `rgba(240, 235, 220, ${alpha})`;   // warm white
-      if (temp === 'milky')  return `rgba(190, 185, 200, ${alpha})`;   // pale lavender
+      if (temp === 'milky') return `rgba(190, 185, 200, ${alpha})`;   // pale lavender
       return `rgba(210, 215, 225, ${alpha})`;                          // neutral dim
     };
 
@@ -415,7 +415,7 @@ function Starfield() {
         const side = Math.floor(Math.random() * 4);
         let x, y, vx, vy;
         const speed = Math.random() * 3 + 2;
-        
+
         if (side === 0) { // top
           x = Math.random() * canvas.width; y = -10;
           const a = (Math.random() * 140 + 20) * (Math.PI / 180);
@@ -433,7 +433,7 @@ function Starfield() {
           const a = (Math.random() * 140 - 70) * (Math.PI / 180);
           vx = Math.cos(a) * speed; vy = Math.sin(a) * speed;
         }
-        
+
         shootingStars.push({
           x, y, vx, vy,
           alpha: 1,
@@ -448,7 +448,7 @@ function Starfield() {
         const dy = blackHole.y - s.y;
         const distSq = dx * dx + dy * dy;
         const dist = Math.sqrt(distSq);
-        
+
         // Apply gravitational pull if close, but not inside
         if (dist > blackHole.radius * 0.8) {
           const force = (blackHole.radius * 90) / Math.max(distSq, 100);
@@ -457,11 +457,11 @@ function Starfield() {
         } else {
           s.alpha -= 0.1; // Fade fast if sucked in
         }
-        
+
         // Track history for drawing
         s.history.unshift({ x: s.x, y: s.y });
         if (s.history.length > 25) s.history.pop();
-        
+
         s.x += s.vx;
         s.y += s.vy;
         s.alpha -= 0.006;
@@ -471,7 +471,7 @@ function Starfield() {
           ctx.beginPath();
           let firstLensed = null;
           let lastLensed = null;
-          
+
           for (let i = 0; i < s.history.length; i++) {
             const pt = getLensedPos(s.history[i].x, s.history[i].y, blackHole);
             if (pt) {
@@ -481,7 +481,7 @@ function Starfield() {
               lastLensed = pt;
             }
           }
-          
+
           if (firstLensed && lastLensed) {
             const g = ctx.createLinearGradient(firstLensed.x, firstLensed.y, lastLensed.x, lastLensed.y);
             g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
