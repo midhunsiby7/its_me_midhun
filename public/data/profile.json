@@ -1,0 +1,37 @@
+{
+  "name": {
+    "first": "Midhun",
+    "last": "Siby"
+  },
+  "roles": [
+    "Developer",
+    "Programmer",
+    "Tech Enthusiast"
+  ],
+  "description": "Passionate BCA student crafting digital experiences with code, exploring the boundaries of technology, physics, and beyond.",
+  "stats": [
+    {
+      "num": "5+",
+      "label": "Projects"
+    },
+    {
+      "num": "6+",
+      "label": "Languages"
+    },
+    {
+      "num": "3+",
+      "label": "Cloud Platforms"
+    }
+  ],
+  "bio": [
+    "I'm Midhun Siby — a passionate student, developer, and programmer who thrives on turning ideas into reality through code. Currently pursuing my Bachelor of Computer Applications (BCA) at BVM Holy Cross College, Cherpunkal, I bring a unique blend of software skills and hardware curiosity to everything I build.",
+    "Known for my adaptive, minimal, and confident personality, I'm someone who embraces challenges, takes risks, and constantly pushes boundaries to achieve what seems impossible. My goal is not only to excel in the IT field but to continuously explore and master diverse domains of interest."
+  ],
+  "traits": [
+    "Adaptive",
+    "Minimal",
+    "Confident",
+    "Risk-taker",
+    "Problem Solver"
+  ]
+}

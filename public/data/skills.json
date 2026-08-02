@@ -1,0 +1,70 @@
+[
+  {
+    "title": "Languages",
+    "icon": "{ }",
+    "skills": [
+      "Python",
+      "Java",
+      "C",
+      "JavaScript",
+      "HTML",
+      "CSS"
+    ]
+  },
+  {
+    "title": "Frameworks & Tech",
+    "icon": "⚡",
+    "skills": [
+      "React",
+      "Node.js",
+      "Flask",
+      "DBMS"
+    ]
+  },
+  {
+    "title": "Tools & Platforms",
+    "icon": "🛠",
+    "skills": [
+      "VS Code",
+      "MySQL",
+      "Firebase",
+      "Git",
+      "Arduino",
+      "PyCharm",
+      "VMware",
+      "MySQL Workbench"
+    ]
+  },
+  {
+    "title": "Cloud & DevOps",
+    "icon": "☁",
+    "skills": [
+      "AWS",
+      "Google Compute Engine",
+      "Microsoft Azure",
+      "Cloudflare",
+      "VPS Hosting"
+    ]
+  },
+  {
+    "title": "Operating Systems",
+    "icon": "🖥",
+    "skills": [
+      "Kali Linux",
+      "CentOS",
+      "Ubuntu",
+      "Windows"
+    ]
+  },
+  {
+    "title": "AI & Problem Solving",
+    "icon": "🧠",
+    "skills": [
+      "Claude",
+      "ChatGPT",
+      "Gemini",
+      "Logical Reasoning",
+      "Backend Development"
+    ]
+  }
+]
