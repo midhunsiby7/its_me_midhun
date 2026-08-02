@@ -53,19 +53,27 @@
   {
     "id": "canteen-app",
     "title": "College Canteen Food Ordering System",
-    "subtitle": "Web Application",
-    "description": "",
+    "subtitle": "Smart Canteen Order Management",
+    "description": "A comprehensive smart canteen order management system built for college campuses. It allows students to browse the daily menu, order food, and pay securely via Razorpay from their phones. The platform features an admin dashboard for live order tracking, menu inventory management, and QR code verification. Includes automated daily menu scheduling and cleanup routines. Co-developed with Keerthana V Saji and Keerthana S.",
     "year": "2024",
     "status": "Completed",
     "category": "Web",
     "type": "Application",
     "featured": true,
     "order": 3,
-    "technologies": [],
-    "github": "",
+    "technologies": [
+      "Python",
+      "Flask",
+      "MySQL",
+      "Firebase Auth",
+      "Razorpay",
+      "JavaScript",
+      "HTML/CSS"
+    ],
+    "github": "https://github.com/midhunsiby7/campusbites",
     "apk": "",
     "website": "",
-    "image": "",
+    "image": "/images/projects/campusbites.png",
     "icon": "🍕"
   },
   {
