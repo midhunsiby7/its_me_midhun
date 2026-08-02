@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import certificatesData from '../../public/data/certificates.json';
+import achievementsData from '../../public/data/achievements.json';
 import './Navbar.css';
 
 function Navbar({ activePage, onNavigate }) {
@@ -8,9 +10,19 @@ function Navbar({ activePage, onNavigate }) {
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'About' },
     { id: 'skills', label: 'Skills' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'interests', label: 'Interests' },
+    { id: 'projects', label: 'Projects' }
   ];
+
+  if (certificatesData.length > 0) {
+    navLinks.push({ id: 'certificates', label: 'Certificates' });
+  }
+
+  if (achievementsData.length > 0) {
+    navLinks.push({ id: 'achievements', label: 'Achievements' });
+  }
+
+  navLinks.push({ id: 'interests', label: 'Interests' });
+
 
   const handleNav = (id) => {
     onNavigate(id);

@@ -7,6 +7,8 @@ import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Interests from './components/Interests';
+import Certificates from './components/Certificates';
+import Achievements from './components/Achievements';
 import Contact from './components/Contact';
 
 function App() {
@@ -183,6 +185,8 @@ function App() {
       case 'skills': return <Skills />;
       case 'projects': return <Projects />;
       case 'interests': return <Interests />;
+      case 'certificates': return <Certificates />;
+      case 'achievements': return <Achievements />;
       case 'contact': return <Contact onNavigate={handleNavigate} />;
       default: return <Hero onNavigate={handleNavigate} />;
     }
