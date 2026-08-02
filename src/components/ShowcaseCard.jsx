@@ -13,7 +13,7 @@ function ShowcaseCard({ item, type }) {
   return (
     <div className={`showcase-card glass-card ${featured ? 'showcase-card--featured' : ''}`}>
       <div className="showcase-card__header">
-        <div className="showcase-card__visual">
+        <div className="showcase-card__media-container">
           {image ? (
             <img 
               src={`${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`} 
@@ -29,9 +29,9 @@ function ShowcaseCard({ item, type }) {
           <p className="showcase-card__subtitle">{subtitle}</p>
           <div className="showcase-card__badges">
             {dateStr && <span className="showcase-card__badge showcase-card__badge--date">{dateStr}</span>}
-            {category && <span className="showcase-card__badge showcase-card__badge--category">{category}</span>}
-            {item.level && <span className="showcase-card__badge showcase-card__badge--level">{item.level}</span>}
-            {item.type && <span className="showcase-card__badge showcase-card__badge--type">{item.type}</span>}
+            {category && <span className="showcase-card__badge showcase-card__badge--cat">{category}</span>}
+            {item.level && <span className="showcase-card__badge showcase-card__badge--lvl">{item.level}</span>}
+            {item.type && <span className="showcase-card__badge showcase-card__badge--typ">{item.type}</span>}
           </div>
         </div>
       </div>

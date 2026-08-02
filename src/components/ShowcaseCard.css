@@ -23,7 +23,7 @@
   align-items: flex-start;
 }
 
-.showcase-card__visual {
+.showcase-card__media-container {
   width: 5.5rem;
   height: 4.5rem;
   padding: 4px;
@@ -90,9 +90,9 @@
   color: #fff;
 }
 
-.showcase-card__badge--category,
-.showcase-card__badge--level,
-.showcase-card__badge--type {
+.showcase-card__badge--cat,
+.showcase-card__badge--lvl,
+.showcase-card__badge--typ {
   /* Inherit default glass badge styles */
 }
 
