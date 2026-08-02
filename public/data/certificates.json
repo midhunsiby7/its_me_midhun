@@ -1,1 +1,56 @@
-[]
+[
+  {
+    "id": "cert-gen-ai",
+    "title": "Introduction to Generative AI Studio",
+    "issuer": "Simplilearn SkillUP",
+    "platform": "Google Cloud",
+    "issueDate": "Feb 27, 2026",
+    "expiryDate": "",
+    "credentialId": "9899205",
+    "description": "Explored the fundamentals of Generative AI using Google Cloud's Vertex AI ecosystem. This certification validated my understanding of prompting techniques, model tuning, and integrating AI studio workflows into practical cloud applications.",
+    "skills": ["Generative AI", "Google Cloud", "Prompt Engineering"],
+    "image": "/images/certificates/gen-ai.jpeg",
+    "credentialUrl": "",
+    "verificationUrl": "",
+    "category": "AI",
+    "order": 1,
+    "featured": true,
+    "level": "Beginner"
+  },
+  {
+    "id": "cert-power-query",
+    "title": "Introduction to Power Query in Excel",
+    "issuer": "Simplilearn SkillUP",
+    "platform": "Microsoft",
+    "issueDate": "Feb 27, 2026",
+    "expiryDate": "",
+    "credentialId": "9899199",
+    "description": "Gained practical experience in automated data extraction, transformation, and loading (ETL) pipelines using Microsoft Power Query. This credential strengthened my foundational data engineering and analytical problem-solving skills.",
+    "skills": ["Power Query", "Data Engineering", "Excel", "Data Transformation"],
+    "image": "/images/certificates/power-query.jpeg",
+    "credentialUrl": "",
+    "verificationUrl": "",
+    "category": "Data",
+    "order": 2,
+    "featured": false,
+    "level": "Beginner"
+  },
+  {
+    "id": "cert-figma",
+    "title": "Introduction to Figma",
+    "issuer": "Simplilearn SkillUP",
+    "platform": "Simplilearn",
+    "issueDate": "Sept 8, 2025",
+    "expiryDate": "",
+    "credentialId": "8935333",
+    "description": "Mastered the core concepts of UI/UX design and wireframing through Figma. This training bridged the gap between my development logic and user-centric frontend design, enabling me to prototype intuitive digital interfaces.",
+    "skills": ["Figma", "UI/UX Design", "Prototyping", "Wireframing"],
+    "image": "/images/certificates/figma.jpeg",
+    "credentialUrl": "",
+    "verificationUrl": "",
+    "category": "Design",
+    "order": 3,
+    "featured": false,
+    "level": "Beginner"
+  }
+]

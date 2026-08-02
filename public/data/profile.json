@@ -4,11 +4,13 @@
     "last": "Siby"
   },
   "roles": [
-    "Developer",
-    "Programmer",
-    "Tech Enthusiast"
+    "Software Developer",
+    "Technology Enthusiast",
+    "Hardware Builder"
   ],
-  "description": "Passionate BCA student crafting digital experiences with code, exploring the boundaries of technology, physics, and beyond.",
+  "description": "Software Developer • Technology Enthusiast • Hardware Builder",
+  "location": "Kottayam, Kerala, India",
+  "email": "midhunsibi123@gmail.com",
   "stats": [
     {
       "num": "5+",
@@ -24,8 +26,8 @@
     }
   ],
   "bio": [
-    "I'm Midhun Siby — a passionate student, developer, and programmer who thrives on turning ideas into reality through code. Currently pursuing my Bachelor of Computer Applications (BCA) at BVM Holy Cross College, Cherpunkal, I bring a unique blend of software skills and hardware curiosity to everything I build.",
-    "Known for my adaptive, minimal, and confident personality, I'm someone who embraces challenges, takes risks, and constantly pushes boundaries to achieve what seems impossible. My goal is not only to excel in the IT field but to continuously explore and master diverse domains of interest."
+    "I am a passionate software developer and technology enthusiast who thrives on turning ideas into reality. Currently pursuing my Bachelor of Computer Applications (BCA Honours) at BVM Holy Cross College, Cherpunkal, I bring a unique blend of software skills and hardware curiosity to everything I build.",
+    "My genuine interests span across software development, hardware projects, Linux, networking, cloud technologies, servers, embedded systems, electronics, and astrophysics. I am constantly exploring the intersections of these fields to architect solutions that are both innovative and technically robust."
   ],
   "traits": [
     "Adaptive",

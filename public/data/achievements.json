@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "id": "intern-python-dev",
+    "title": "Python Development Internship",
+    "organization": "Internify (Qelora Technologies)",
+    "date": "April - May 2026",
+    "description": "Completed a structured, 240-hour internship focused on advanced Python development. Delivered robust programming solutions across 30+ practical tasks, scoring an outstanding 47/50 in technical evaluation. The attached repository documents the complete history of assignments bridging theoretical syntax with real-world application architecture.",
+    "category": "Internship",
+    "image": "/images/achievements/python-dev.jpeg",
+    "link": "https://github.com/midhunsiby7/internify.git",
+    "order": 1,
+    "featured": true,
+    "type": "Software Engineering Internship"
+  },
+  {
+    "id": "intern-def-space",
+    "title": "Def-Space Tech Intern",
+    "organization": "Bharat Space Education Research Centre",
+    "date": "June - July 2026",
+    "description": "Selected for an intensive technical training program covering cutting-edge defense and space technologies. Explored multi-disciplinary domains including AI Ecosystems, Advanced Drone Technology, Rocketry Design, and Military Intelligence Threat Analysis via Machine Learning.",
+    "category": "Internship",
+    "image": "/images/achievements/def-space.jpeg",
+    "link": "https://www.bserc.org/",
+    "order": 2,
+    "featured": true,
+    "type": "Aerospace & Defense Internship"
+  },
+  {
+    "id": "intern-cyber-security",
+    "title": "Cyber Security Internship",
+    "organization": "Corizo (Wipro DICE)",
+    "date": "Sept - Oct 2024",
+    "description": "Engaged in an immersive cybersecurity training and internship track certified by Corizo and Wipro. Developed a strong foundation in threat mitigation, network security protocols, and ethical hacking fundamentals, demonstrating active participation and innovation over the month-long period.",
+    "category": "Internship",
+    "image": "/images/achievements/cyber-security.jpeg",
+    "link": "",
+    "order": 3,
+    "featured": false,
+    "type": "Security Internship"
+  },
+  {
+    "id": "hackathon-nasa",
+    "title": "NASA Space Apps Challenge 2025",
+    "organization": "Amal Jyothi College of Engineering",
+    "date": "October 4-5, 2025",
+    "description": "Collaborated in a high-pressure, 48-hour global hackathon environment addressing real-world challenges posed by NASA. Leveraged rapid prototyping and teamwork to engineer a technology-driven solution, reinforcing my capability to adapt and execute under strict time constraints.",
+    "category": "Hackathon",
+    "image": "/images/achievements/nasa-hackathon.jpeg",
+    "link": "",
+    "order": 4,
+    "featured": false,
+    "type": "Global Hackathon"
+  }
+]
