@@ -1,13 +1,19 @@
+import { useEffect, useState } from 'react';
 import './Interests.css';
 
-const interests = [
-  { title: 'Astrophysics', description: 'Fascinated by the cosmos — black holes, quantum mechanics, and the mysteries of the universe.', icon: '🔭', color: '#8b5cf6' },
-  { title: 'Electronics & Hardware', description: 'Building inverter circuits, restoring walkman devices, and experimenting with custom PCBs.', icon: '🔌', color: '#3b82f6' },
-  { title: 'Vehicle Mechanics', description: 'Understanding the engineering behind vehicles — engines, transmission systems, and mechanics.', icon: '🏎', color: '#06b6d4' },
-  { title: 'Physics & Science', description: 'Deep curiosity for the laws that govern our universe, from sub-atomic particles to cosmic scales.', icon: '⚛', color: '#ec4899' },
-];
+const INTEREST_COLORS = ['#8b5cf6', '#3b82f6', '#06b6d4', '#ec4899'];
 
 function Interests() {
+  const [interests, setInterests] = useState([]);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}data/interests.json`)
+      .then(res => res.json())
+      .then(setInterests);
+  }, []);
+
+  if (!interests.length) return null;
+
   return (
     <div className="interests">
       <div className="section-container">
@@ -17,7 +23,7 @@ function Interests() {
         </h2>
         <div className="interests__grid">
           {interests.map((item, i) => (
-            <div key={item.title} className={`interests__card glass-card reveal-scale delay-${Math.min(i + 2, 6)}`} style={{ '--accent': item.color }}>
+            <div key={item.title} className={`interests__card glass-card reveal-scale delay-${Math.min(i + 2, 6)}`} style={{ '--accent': INTEREST_COLORS[i % INTEREST_COLORS.length] }}>
               <div className="interests__icon-wrap">
                 <span className="interests__icon">{item.icon}</span>
               </div>
@@ -32,3 +38,4 @@ function Interests() {
 }
 
 export default Interests;
+

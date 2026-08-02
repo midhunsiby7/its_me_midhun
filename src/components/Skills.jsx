@@ -1,15 +1,19 @@
+import { useEffect, useState } from 'react';
 import './Skills.css';
 
-const skillCategories = [
-  { title: 'Languages', icon: '{ }', color: '#8b5cf6', skills: ['Python', 'Java', 'C', 'JavaScript', 'HTML', 'CSS'] },
-  { title: 'Frameworks & Tech', icon: '⚡', color: '#3b82f6', skills: ['React', 'Node.js', 'Flask', 'DBMS'] },
-  { title: 'Tools & Platforms', icon: '🛠', color: '#06b6d4', skills: ['VS Code', 'MySQL', 'Firebase', 'Git', 'Arduino', 'PyCharm', 'VMware', 'MySQL Workbench'] },
-  { title: 'Cloud & DevOps', icon: '☁', color: '#10b981', skills: ['AWS', 'Google Compute Engine', 'Microsoft Azure', 'Cloudflare', 'VPS Hosting'] },
-  { title: 'Operating Systems', icon: '🖥', color: '#ec4899', skills: ['Kali Linux', 'CentOS', 'Ubuntu', 'Windows'] },
-  { title: 'AI & Problem Solving', icon: '🧠', color: '#f59e0b', skills: ['Claude', 'ChatGPT', 'Gemini', 'Logical Reasoning', 'Backend Development'] },
-];
+const SKILL_COLORS = ['#8b5cf6', '#3b82f6', '#06b6d4', '#10b981', '#ec4899', '#f59e0b'];
 
 function Skills() {
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}data/skills.json`)
+      .then(res => res.json())
+      .then(setSkills);
+  }, []);
+
+  if (!skills.length) return null;
+
   return (
     <div className="skills">
       <div className="section-container">
@@ -18,8 +22,8 @@ function Skills() {
           Skills & <span className="gradient-text">Technologies</span>
         </h2>
         <div className="skills__grid">
-          {skillCategories.map((cat, i) => (
-            <div key={cat.title} className={`skills__card glass-card reveal delay-${Math.min(i + 2, 6)}`} style={{ '--card-accent': cat.color }}>
+          {skills.map((cat, i) => (
+            <div key={cat.title} className={`skills__card glass-card reveal delay-${Math.min(i + 2, 6)}`} style={{ '--card-accent': SKILL_COLORS[i % SKILL_COLORS.length] }}>
               <div className="skills__card-header">
                 <span className="skills__card-icon">{cat.icon}</span>
                 <h3 className="skills__card-title">{cat.title}</h3>
@@ -38,3 +42,4 @@ function Skills() {
 }
 
 export default Skills;
+
