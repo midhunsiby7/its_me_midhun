@@ -32,10 +32,8 @@ function Navbar({ activePage, onNavigate }) {
   return (
     <nav className="navbar">
       <div className="navbar__inner">
-        <button className="navbar__logo" onClick={() => handleNav('home')}>
-          <span className="navbar__logo-b">&lt;</span>
-          <span className="navbar__logo-n">Midhun</span>
-          <span className="navbar__logo-b">/&gt;</span>
+        <button onClick={() => handleNav('home')} className="navbar__logo">
+          &lt;Midhun<span className="navbar__logo-b">/&gt;</span> <span style={{fontSize: '10px', opacity: 0.3}}>v7.1</span>
         </button>
 
         {/* Hamburger */}
