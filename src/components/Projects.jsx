@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import projectsData from '../../public/data/projects.json';
 import './Projects.css';
 
 const PROJECT_GRADIENTS = [
@@ -8,15 +8,7 @@ const PROJECT_GRADIENTS = [
 ];
 
 function Projects() {
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/projects.json`)
-      .then(res => res.json())
-      .then(data => setProjects(data.sort((a, b) => a.order - b.order)));
-  }, []);
-
-  if (!projects.length) return null;
+  const projects = [...projectsData].sort((a, b) => a.order - b.order);
 
   return (
     <div className="projects">

@@ -1,23 +1,15 @@
 import { useEffect, useState } from 'react';
+import profile from '../../public/data/profile.json';
+import socials from '../../public/data/socials.json';
 import './Hero.css';
 
 function Hero({ onNavigate }) {
   const [loaded, setLoaded] = useState(false);
-  const [profile, setProfile] = useState(null);
-  const [socials, setSocials] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${import.meta.env.BASE_URL}data/profile.json`).then(res => res.json()),
-      fetch(`${import.meta.env.BASE_URL}data/socials.json`).then(res => res.json())
-    ]).then(([profileData, socialsData]) => {
-      setProfile(profileData);
-      setSocials(socialsData);
-      setTimeout(() => setLoaded(true), 100);
-    });
+    setTimeout(() => setLoaded(true), 100);
   }, []);
 
-  if (!profile || !socials) return null;
 
   return (
     <div className={`hero ${loaded ? 'hero--loaded' : ''}`}>

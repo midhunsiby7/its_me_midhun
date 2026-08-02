@@ -1,18 +1,9 @@
-import { useEffect, useState } from 'react';
+import skills from '../../public/data/skills.json';
 import './Skills.css';
 
 const SKILL_COLORS = ['#8b5cf6', '#3b82f6', '#06b6d4', '#10b981', '#ec4899', '#f59e0b'];
 
 function Skills() {
-  const [skills, setSkills] = useState([]);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/skills.json`)
-      .then(res => res.json())
-      .then(setSkills);
-  }, []);
-
-  if (!skills.length) return null;
 
   return (
     <div className="skills">

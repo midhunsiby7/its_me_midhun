@@ -1,22 +1,8 @@
-import { useEffect, useState } from 'react';
+import profile from '../../public/data/profile.json';
+import education from '../../public/data/education.json';
 import './About.css';
 
 function About() {
-  const [profile, setProfile] = useState(null);
-  const [education, setEducation] = useState(null);
-
-  useEffect(() => {
-    Promise.all([
-      fetch(`${import.meta.env.BASE_URL}data/profile.json`).then(res => res.json()),
-      fetch(`${import.meta.env.BASE_URL}data/education.json`).then(res => res.json())
-    ]).then(([profileData, eduData]) => {
-      setProfile(profileData);
-      setEducation(eduData);
-    });
-  }, []);
-
-  if (!profile || !education) return null;
-
   return (
     <div className="about">
       <div className="section-container">

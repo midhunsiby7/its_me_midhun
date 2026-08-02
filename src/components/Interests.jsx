@@ -1,18 +1,9 @@
-import { useEffect, useState } from 'react';
+import interests from '../../public/data/interests.json';
 import './Interests.css';
 
 const INTEREST_COLORS = ['#8b5cf6', '#3b82f6', '#06b6d4', '#ec4899'];
 
 function Interests() {
-  const [interests, setInterests] = useState([]);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/interests.json`)
-      .then(res => res.json())
-      .then(setInterests);
-  }, []);
-
-  if (!interests.length) return null;
 
   return (
     <div className="interests">

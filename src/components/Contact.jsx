@@ -1,16 +1,7 @@
-import { useEffect, useState } from 'react';
+import socials from '../../public/data/socials.json';
 import './Contact.css';
 
 function Contact({ onNavigate }) {
-  const [socials, setSocials] = useState(null);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/socials.json`)
-      .then(res => res.json())
-      .then(setSocials);
-  }, []);
-
-  if (!socials) return null;
 
   return (
     <div className="contact">
