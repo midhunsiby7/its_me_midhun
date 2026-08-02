@@ -114,29 +114,30 @@
   transform: translateX(-50%);
   width: 18px;
   height: 2px;
-  background: var(--gradient-primary);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
   border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .navbar__cta {
   font-family: var(--font-body);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 500;
   padding: 0.45rem 1.25rem;
   border-radius: var(--radius-pill);
-  background: var(--gradient-primary);
-  background-size: 200% auto;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
-  border: none;
   cursor: pointer;
   transition: all var(--transition-base);
   margin-left: 0.5rem;
 }
 
 .navbar__cta:hover {
-  background-position: right center;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== MOBILE ===== */
@@ -163,12 +164,12 @@
     padding: 1rem;
 
     /* Glassmorphism Card Effect */
-    background: rgba(12, 12, 19, 0.94);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(15, 15, 22, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-card);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
 
     transform-origin: top right;
     transform: translateY(-15px) scale(0.95);
@@ -192,7 +193,8 @@
   }
 
   .navbar__link--active {
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
   }
 
   .navbar__indicator {
