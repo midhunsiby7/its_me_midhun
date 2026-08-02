@@ -30,7 +30,11 @@ function Projects() {
             <div key={p.title} className={`projects__card glass-card reveal delay-${Math.min(i + 2, 6)}`}>
               <div className="projects__card-accent" style={{ background: PROJECT_GRADIENTS[i % PROJECT_GRADIENTS.length] }} />
               <div className="projects__card-body">
-                <span className="projects__icon">{p.icon}</span>
+                {p.image ? (
+                  <img src={`${import.meta.env.BASE_URL}${p.image.startsWith('/') ? p.image.slice(1) : p.image}`} alt={p.title} className="projects__thumbnail" />
+                ) : (
+                  <span className="projects__icon">{p.icon}</span>
+                )}
                 <h3 className="projects__title">{p.title}</h3>
                 <p className="projects__desc">{p.description}</p>
                 <div className="projects__tech">
