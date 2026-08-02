@@ -23,7 +23,15 @@
     "apk": "https://github.com/midhunsiby7/StreamDrop/releases/latest",
     "website": "",
     "image": "",
-    "icon": "📱"
+    "icon": "📱",
+    "highlights": [
+      "Native Android application",
+      "Offline media processing",
+      "Background downloads",
+      "Material 3 interface"
+    ],
+    "repositoryVisibility": "public",
+    "release": "v1.0.0"
   },
   {
     "id": "aitalkie",
@@ -48,7 +56,15 @@
     "apk": "https://github.com/midhunsiby7/ai-talky/releases/latest",
     "website": "",
     "image": "",
-    "icon": "🤖"
+    "icon": "🤖",
+    "highlights": [
+      "Always-listening voice loop",
+      "Native Android STT & TTS",
+      "Lightweight OkHttp networking",
+      "Groq API (Llama 3) integration"
+    ],
+    "repositoryVisibility": "public",
+    "release": "v1.0.0"
   },
   {
     "id": "canteen-app",
@@ -74,7 +90,15 @@
     "apk": "",
     "website": "",
     "image": "/images/projects/campusbites.png",
-    "icon": "🍕"
+    "icon": "🍕",
+    "highlights": [
+      "Razorpay payment integration",
+      "Live order tracking dashboard",
+      "QR code order verification",
+      "Automated daily cleanup routines"
+    ],
+    "repositoryVisibility": "public",
+    "release": "v1.0.0"
   },
   {
     "id": "arduino-automation",
@@ -97,7 +121,15 @@
     "apk": "",
     "website": "",
     "image": "",
-    "icon": "⚙️"
+    "icon": "⚙️",
+    "highlights": [
+      "Weather-responsive automation",
+      "Fire alarm system integration",
+      "Hardware sensor processing",
+      "Custom C++ logic"
+    ],
+    "repositoryVisibility": "private",
+    "release": ""
   },
   {
     "id": "electronics-builds",
@@ -121,6 +153,14 @@
     "apk": "",
     "website": "",
     "image": "",
-    "icon": "⚡"
+    "icon": "⚡",
+    "highlights": [
+      "Custom power inverter",
+      "DC to AC conversion",
+      "Transformer & MOSFET circuitry",
+      "Exhibition demonstration"
+    ],
+    "repositoryVisibility": "private",
+    "release": ""
   }
 ]
