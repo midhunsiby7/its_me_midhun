@@ -16,13 +16,13 @@
 .projects__card-accent {
   height: 3px;
   width: 100%;
-  border-radius: 20px 20px 0 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   transition: height var(--transition-base);
 }
 .projects__card:hover .projects__card-accent { height: 5px; }
 
 .projects__card-body {
-  padding: 1.5rem;
+  padding: var(--spacing-card);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
 .projects__thumbnail {
   width: 42px;
   height: 42px;
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   object-fit: cover;
   margin-bottom: 0.85rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -50,7 +50,7 @@
 
 .projects__tech-tag {
   padding: 0.2rem 0.55rem;
-  border-radius: 8px;
+  border-radius: var(--radius-pill);
   font-size: 0.7rem;
   font-weight: 500;
   background: rgba(139, 92, 246, 0.08);
@@ -66,7 +66,7 @@
   font-weight: 500;
   color: var(--text-secondary);
   padding: 0.4rem 0.9rem;
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all var(--transition-base);

@@ -15,7 +15,7 @@ function About() {
         <div className="about__grid">
           <div className="about__bio reveal delay-2">
             {profile.bio.map((paragraph, index) => (
-              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph.replace(/Midhun Siby|Bachelor of Computer Applications \(BCA\)|BVM Holy Cross College, Cherpunkal/g, '<strong>$&</strong>') }} />
+              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph.replace(/Midhun Siby|Bachelor of Computer Applications \(BCA Honours\)|BVM Holy Cross College, Cherpunkal/g, '<strong>$&</strong>') }} />
             ))}
           </div>
 

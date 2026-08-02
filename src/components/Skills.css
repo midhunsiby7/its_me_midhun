@@ -9,7 +9,7 @@
 }
 
 .skills__card {
-  padding: 1.5rem;
+  padding: var(--spacing-card);
 }
 .skills__card:hover {
   border-color: color-mix(in srgb, var(--card-accent) 30%, transparent);
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: var(--radius-inner);
   background: color-mix(in srgb, var(--card-accent) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--card-accent) 18%, transparent);
 }
@@ -44,7 +44,7 @@
 
 .skills__tag {
   padding: 0.3rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
   font-size: 0.78rem;
   font-weight: 500;
   background: rgba(255, 255, 255, 0.03);
