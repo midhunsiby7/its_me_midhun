@@ -26,8 +26,9 @@ function Starfield() {
 
     const createMilkyWayTexture = () => {
       const texture = document.createElement('canvas');
-      texture.width = canvas.width;
-      texture.height = canvas.height;
+      const scale = 0.55;
+      texture.width = Math.max(1, Math.floor(canvas.width * scale));
+      texture.height = Math.max(1, Math.floor(canvas.height * scale));
       const textureCtx = texture.getContext('2d');
       const w = texture.width;
       const h = texture.height;
@@ -38,58 +39,94 @@ function Starfield() {
           return seed / 4294967296;
         };
       })();
+      const equatorialToGalactic = [
+        [-0.0548755604, -0.8734370902, -0.4838350155],
+        [0.4941094279, -0.4448296300, 0.7469822445],
+        [-0.8676661490, -0.1980763734, 0.4559837762],
+      ];
 
-      textureCtx.save();
-      textureCtx.translate(w * 0.13, h * 0.54);
-      textureCtx.rotate(-0.2);
-      textureCtx.globalCompositeOperation = 'screen';
+      const galacticToScreen = (longitude, latitude) => {
+        const cosLat = Math.cos(latitude);
+        const galacticVector = [
+          cosLat * Math.cos(longitude),
+          cosLat * Math.sin(longitude),
+          Math.sin(latitude),
+        ];
+        const equatorialVector = equatorialToGalactic[0].map((_, row) => (
+          equatorialToGalactic[0][row] * galacticVector[0]
+          + equatorialToGalactic[1][row] * galacticVector[1]
+          + equatorialToGalactic[2][row] * galacticVector[2]
+        ));
+        const ra = Math.atan2(equatorialVector[1], equatorialVector[0]);
+        const dec = Math.asin(equatorialVector[2]);
+        const lambda = Math.atan2(Math.sin(ra - Math.PI), Math.cos(ra - Math.PI));
+        const denominator = Math.sqrt(1 + Math.cos(dec) * Math.cos(lambda / 2));
+        const projectedX = (2 * Math.cos(dec) * Math.sin(lambda / 2)) / denominator;
+        const projectedY = Math.sin(dec) / denominator;
 
-      const band = textureCtx.createLinearGradient(-w * 0.08, 0, w * 0.58, 0);
-      band.addColorStop(0, 'rgba(210, 218, 232, 0)');
-      band.addColorStop(0.18, 'rgba(210, 218, 232, 0.012)');
-      band.addColorStop(0.5, 'rgba(220, 224, 232, 0.026)');
-      band.addColorStop(0.8, 'rgba(195, 204, 222, 0.012)');
-      band.addColorStop(1, 'rgba(190, 200, 220, 0)');
-      textureCtx.fillStyle = band;
-      textureCtx.filter = 'blur(24px)';
-      textureCtx.fillRect(-w * 0.1, -h * 0.95, w * 0.68, h * 1.9);
+        return {
+          x: w * 0.5 + projectedX * w * 0.235,
+          y: h * 0.5 - projectedY * h * 0.46,
+        };
+      };
 
-      textureCtx.filter = 'blur(11px)';
-      for (let i = 0; i < 18; i += 1) {
-        const y = (random() - 0.5) * h * 1.45;
-        const width = w * (0.24 + random() * 0.28);
-        const x = -w * 0.12 + random() * w * 0.35;
+      const drawSoftPoint = (x, y, radius, alpha, color) => {
+        if (x < -radius || x > w + radius || y < -radius || y > h + radius) return;
+        const gradient = textureCtx.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0, `rgba(${color}, ${alpha})`);
+        gradient.addColorStop(1, `rgba(${color}, 0)`);
+        textureCtx.fillStyle = gradient;
         textureCtx.beginPath();
-        textureCtx.moveTo(x, y);
-        textureCtx.bezierCurveTo(
-          x + width * 0.25, y + (random() - 0.5) * h * 0.08,
-          x + width * 0.7, y + (random() - 0.5) * h * 0.12,
-          x + width, y + (random() - 0.5) * h * 0.08
-        );
-        textureCtx.strokeStyle = `rgba(222, 226, 232, ${0.008 + random() * 0.014})`;
+        textureCtx.arc(x, y, radius, 0, Math.PI * 2);
+        textureCtx.fill();
+      };
+
+      // The Galactic plane is rendered from l/b coordinates, then projected
+      // with the same Hammer-Aitoff orientation as the catalog stars.
+      textureCtx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 2600; i += 1) {
+        const longitude = random() * Math.PI * 2;
+        const latitude = (random() + random() + random() - 1.5) * (Math.PI / 18);
+        const point = galacticToScreen(longitude, latitude);
+        const leftBias = clamp(1.25 - point.x / w, 0.35, 1);
+        const centerRichness = 0.7 + 0.3 * Math.cos(longitude) ** 2;
+        const alpha = (0.002 + random() * 0.009) * leftBias * centerRichness;
+        const radius = 0.35 + random() * 1.6;
+        drawSoftPoint(point.x, point.y, radius, alpha, random() > 0.18 ? '205, 214, 226' : '224, 218, 204');
+      }
+
+      // A second, finer pass creates grain without adding identifiable stars.
+      for (let i = 0; i < 4200; i += 1) {
+        const longitude = random() * Math.PI * 2;
+        const latitude = (random() + random() - 1) * (Math.PI / 30);
+        const point = galacticToScreen(longitude, latitude);
+        const leftBias = clamp(1.2 - point.x / w, 0.25, 1);
+        const alpha = (0.001 + random() * 0.004) * leftBias;
+        drawSoftPoint(point.x, point.y, 0.2 + random() * 0.55, alpha, '190, 202, 218');
+      }
+
+      // Irregular dust lanes are dark, translucent paths rather than stripes.
+      textureCtx.globalCompositeOperation = 'source-over';
+      textureCtx.filter = 'blur(2px)';
+      for (let lane = 0; lane < 11; lane += 1) {
+        const startLongitude = random() * Math.PI * 2;
+        const width = (0.16 + random() * 0.3) * Math.PI;
+        const points = [];
+        for (let step = 0; step <= 16; step += 1) {
+          const longitude = startLongitude + (step / 16) * width;
+          const latitude = ((random() - 0.5) * 0.045) + Math.sin(step * 0.8 + lane) * 0.018;
+          points.push(galacticToScreen(longitude, latitude));
+        }
+        textureCtx.beginPath();
+        textureCtx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i += 1) {
+          textureCtx.lineTo(points[i].x, points[i].y);
+        }
+        textureCtx.strokeStyle = `rgba(3, 6, 12, ${0.08 + random() * 0.12})`;
         textureCtx.lineWidth = h * (0.008 + random() * 0.018);
         textureCtx.stroke();
       }
 
-      textureCtx.globalCompositeOperation = 'destination-out';
-      textureCtx.filter = 'blur(10px)';
-      for (let i = 0; i < 7; i += 1) {
-        const y = (random() - 0.5) * h * 1.25;
-        const width = w * (0.18 + random() * 0.28);
-        const x = -w * 0.08 + random() * w * 0.28;
-        textureCtx.beginPath();
-        textureCtx.moveTo(x, y);
-        textureCtx.bezierCurveTo(
-          x + width * 0.3, y + (random() - 0.5) * h * 0.06,
-          x + width * 0.65, y + (random() - 0.5) * h * 0.1,
-          x + width, y + (random() - 0.5) * h * 0.06
-        );
-        textureCtx.strokeStyle = `rgba(0, 0, 0, ${0.12 + random() * 0.16})`;
-        textureCtx.lineWidth = h * (0.012 + random() * 0.018);
-        textureCtx.stroke();
-      }
-
-      textureCtx.restore();
       milkyWayTexture = texture;
     };
 
@@ -152,7 +189,7 @@ function Starfield() {
     // ── Static, low-contrast Milky Way texture ──
     const drawMilkyWay = () => {
       if (!milkyWayTexture) return;
-      ctx.drawImage(milkyWayTexture, 0, 0);
+      ctx.drawImage(milkyWayTexture, 0, 0, canvas.width, canvas.height);
     };
 
     // ── Geodesic-based gravitational lensing ──
