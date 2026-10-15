@@ -13,10 +13,84 @@ function Starfield() {
     let shootingStars = [];
     let shootingStarCooldown = 0;
     let blackHole = null;
+    let milkyWayTexture = null;
+    let pointer = null;
+    let pointerActive = false;
+    let pointerInfluence = 0;
+    const pointerEnabled = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    };
+
+    const createMilkyWayTexture = () => {
+      const texture = document.createElement('canvas');
+      texture.width = canvas.width;
+      texture.height = canvas.height;
+      const textureCtx = texture.getContext('2d');
+      const w = texture.width;
+      const h = texture.height;
+      const random = (() => {
+        let seed = 17;
+        return () => {
+          seed = (seed * 1664525 + 1013904223) % 4294967296;
+          return seed / 4294967296;
+        };
+      })();
+
+      textureCtx.save();
+      textureCtx.translate(w * 0.13, h * 0.54);
+      textureCtx.rotate(-0.2);
+      textureCtx.globalCompositeOperation = 'screen';
+
+      const band = textureCtx.createLinearGradient(-w * 0.08, 0, w * 0.58, 0);
+      band.addColorStop(0, 'rgba(210, 218, 232, 0)');
+      band.addColorStop(0.18, 'rgba(210, 218, 232, 0.012)');
+      band.addColorStop(0.5, 'rgba(220, 224, 232, 0.026)');
+      band.addColorStop(0.8, 'rgba(195, 204, 222, 0.012)');
+      band.addColorStop(1, 'rgba(190, 200, 220, 0)');
+      textureCtx.fillStyle = band;
+      textureCtx.filter = 'blur(24px)';
+      textureCtx.fillRect(-w * 0.1, -h * 0.95, w * 0.68, h * 1.9);
+
+      textureCtx.filter = 'blur(11px)';
+      for (let i = 0; i < 18; i += 1) {
+        const y = (random() - 0.5) * h * 1.45;
+        const width = w * (0.24 + random() * 0.28);
+        const x = -w * 0.12 + random() * w * 0.35;
+        textureCtx.beginPath();
+        textureCtx.moveTo(x, y);
+        textureCtx.bezierCurveTo(
+          x + width * 0.25, y + (random() - 0.5) * h * 0.08,
+          x + width * 0.7, y + (random() - 0.5) * h * 0.12,
+          x + width, y + (random() - 0.5) * h * 0.08
+        );
+        textureCtx.strokeStyle = `rgba(222, 226, 232, ${0.008 + random() * 0.014})`;
+        textureCtx.lineWidth = h * (0.008 + random() * 0.018);
+        textureCtx.stroke();
+      }
+
+      textureCtx.globalCompositeOperation = 'destination-out';
+      textureCtx.filter = 'blur(10px)';
+      for (let i = 0; i < 7; i += 1) {
+        const y = (random() - 0.5) * h * 1.25;
+        const width = w * (0.18 + random() * 0.28);
+        const x = -w * 0.08 + random() * w * 0.28;
+        textureCtx.beginPath();
+        textureCtx.moveTo(x, y);
+        textureCtx.bezierCurveTo(
+          x + width * 0.3, y + (random() - 0.5) * h * 0.06,
+          x + width * 0.65, y + (random() - 0.5) * h * 0.1,
+          x + width, y + (random() - 0.5) * h * 0.06
+        );
+        textureCtx.strokeStyle = `rgba(0, 0, 0, ${0.12 + random() * 0.16})`;
+        textureCtx.lineWidth = h * (0.012 + random() * 0.018);
+        textureCtx.stroke();
+      }
+
+      textureCtx.restore();
+      milkyWayTexture = texture;
     };
 
     // ── Real constellation star data ──
@@ -75,21 +149,10 @@ function Starfield() {
       };
     };
 
-    // ── Milky Way haze ──
+    // ── Static, low-contrast Milky Way texture ──
     const drawMilkyWay = () => {
-      ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.38, 0);
-      grad.addColorStop(0, 'rgba(0,0,0,0)');
-      grad.addColorStop(0.25, 'rgba(180,170,200,0.008)');
-      grad.addColorStop(0.5, 'rgba(200,195,210,0.012)');
-      grad.addColorStop(0.75, 'rgba(160,150,180,0.006)');
-      grad.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = grad;
-      ctx.translate(canvas.width * 0.08, canvas.height / 2);
-      ctx.rotate(-0.18);
-      ctx.fillRect(-canvas.width * 0.12, -canvas.height * 1.2, canvas.width * 0.38, canvas.height * 2.4);
-      ctx.restore();
+      if (!milkyWayTexture) return;
+      ctx.drawImage(milkyWayTexture, 0, 0);
     };
 
     // ── Geodesic-based gravitational lensing ──
@@ -281,8 +344,32 @@ function Starfield() {
       drawMilkyWay();
 
       // Draw stars with gravitational lensing
+      const pointerDx = pointer ? pointer.x - blackHole.x : 0;
+      const pointerDy = pointer ? pointer.y - blackHole.y : 0;
+      const pointerDistance = Math.sqrt(pointerDx * pointerDx + pointerDy * pointerDy);
+      const pointerRadius = Math.max(140, Math.min(canvas.width, canvas.height) * 0.2);
+      const pointerTarget = pointerEnabled && pointerActive
+        ? clamp(1 - pointerDistance / pointerRadius, 0, 1) ** 2
+        : 0;
+      pointerInfluence += (pointerTarget - pointerInfluence) * 0.08;
+
       stars.forEach(star => {
-        const lensed = getLensedPos(star.x, star.y, blackHole);
+        let starX = star.x;
+        let starY = star.y;
+        if (pointerEnabled && pointer && blackHole && pointerInfluence > 0.001) {
+          const starDx = star.x - blackHole.x;
+          const starDy = star.y - blackHole.y;
+          const starDistance = Math.sqrt(starDx * starDx + starDy * starDy);
+          const starRadius = Math.max(180, Math.min(canvas.width, canvas.height) * 0.26);
+          const starInfluence = clamp(1 - starDistance / starRadius, 0, 1);
+          const influence = pointerInfluence * starInfluence * starInfluence;
+          const movement = Math.min(2.2, pointerDistance * 0.012) * influence;
+
+          starX += (pointerDx / Math.max(pointerDistance, 1)) * movement;
+          starY += (pointerDy / Math.max(pointerDistance, 1)) * movement;
+        }
+
+        const lensed = getLensedPos(starX, starY, blackHole);
         if (!lensed) return;
 
         const tw = star.twinkleSpeed > 0
@@ -388,25 +475,35 @@ function Starfield() {
     };
 
     resize();
+    createMilkyWayTexture();
     createStars();
     animate();
 
-    const handleResize = () => { resize(); createStars(); };
+    const handleResize = () => {
+      resize();
+      createMilkyWayTexture();
+      createStars();
+    };
     const handleMouseMove = (e) => {
-      if (blackHole) {
-        const cx = window.innerWidth * 0.8;
-        const cy = window.innerHeight * 0.25;
-        blackHole.targetX = cx + (e.clientX - window.innerWidth / 2) * 0.04;
-        blackHole.targetY = cy + (e.clientY - window.innerHeight / 2) * 0.04;
+      if (pointerEnabled) {
+        pointer = { x: e.clientX, y: e.clientY };
+        pointerActive = true;
       }
     };
+    const handleMouseLeave = () => { pointerActive = false; };
 
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
+    if (pointerEnabled) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseleave', handleMouseLeave);
+    }
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (pointerEnabled) {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseleave', handleMouseLeave);
+      }
     };
   }, []);
 
