@@ -70,3 +70,14 @@
 @media (max-width: 500px) {
   .interests__grid { grid-template-columns: 1fr; max-width: 350px; margin: 0 auto; }
 }
+
+@media (max-width: 380px) {
+  .interests__intro {
+    font-size: 0.9rem;
+  }
+
+  .interests__card {
+    min-height: 0;
+    padding: 1.25rem;
+  }
+}

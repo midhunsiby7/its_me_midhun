@@ -199,6 +199,7 @@
 
 .showcase-card__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: auto;
   padding-top: 0.5rem;
@@ -320,6 +321,35 @@
 }
 
 @media (max-width: 600px) {
+  .showcase-card {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .showcase-card--certificate .showcase-card__media-container,
+  .showcase-card--achievement .showcase-card__media-container {
+    height: clamp(10rem, 52vw, 13rem);
+    margin-bottom: 1rem;
+  }
+
+  .showcase-card__title {
+    font-size: 1.05rem;
+  }
+
+  .showcase-card__description {
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+
+  .showcase-card__actions {
+    gap: 0.5rem;
+  }
+
+  .showcase-card__btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
   .certificate-lightbox__content {
     max-width: 96vw;
     padding: 0.6rem;

@@ -62,6 +62,7 @@
 
 .contact__card h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.1rem; }
 .contact__card p { font-size: 0.8rem; color: var(--text-secondary); }
+.contact__card p { overflow-wrap: anywhere; }
 
 .contact__primary-action {
   display: inline-flex;
@@ -102,4 +103,6 @@
 @media (max-width: 600px) {
   .contact__cards { grid-template-columns: 1fr; }
   .contact { min-height: auto; padding: 2.5rem 0; }
+  .contact__card { padding: 1rem; }
+  .contact__primary-action { width: 100%; min-width: 0; }
 }

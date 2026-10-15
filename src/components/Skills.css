@@ -68,3 +68,14 @@
   .skills__grid { grid-template-columns: 1fr; }
   .skills__card { padding: 1.25rem; }
 }
+
+@media (max-width: 380px) {
+  .skills__card {
+    padding: 1rem;
+  }
+
+  .skills__tag {
+    font-size: 0.72rem;
+    padding-inline: 0.65rem;
+  }
+}

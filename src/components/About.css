@@ -138,6 +138,20 @@
       align-items: flex-start;
     }
   }
+
+  @media (max-width: 380px) {
+    .about__bio p {
+      font-size: 0.88rem;
+    }
+
+    .about__timeline-year {
+      font-size: 0.68rem;
+    }
+
+    .about__timeline-content h4 {
+      font-size: 0.82rem;
+    }
+  }
   .about__bio p { font-size: 0.9rem; }
   .about__edu-logo { width: 42px; height: 42px; }
   .about__timeline-content h4 { font-size: 0.88rem; }

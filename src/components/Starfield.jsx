@@ -10,6 +10,7 @@ function Starfield() {
     let animationId;
     let stars = [];
     let shootingStars = [];
+    let shootingStarCooldown = 0;
     let blackHole = null;
 
     const resize = () => {
@@ -410,7 +411,8 @@ function Starfield() {
       drawBlackHole(time);
 
       // Shooting stars (spawning from all directions)
-      if (Math.random() < 0.012) { // Reduced frequency from 0.015 to 0.012 (20% reduction)
+      shootingStarCooldown = Math.max(0, shootingStarCooldown - 1);
+      if (shootingStars.length === 0 && shootingStarCooldown === 0 && Math.random() < 0.004) {
         const side = Math.floor(Math.random() * 4);
         let x, y, vx, vy;
         const speed = Math.random() * 3 + 2;
@@ -438,6 +440,7 @@ function Starfield() {
           alpha: 1,
           history: [] // For curved gravity trails
         });
+        shootingStarCooldown = Math.floor(Math.random() * 240) + 240;
       }
 
       shootingStars = shootingStars.filter(s => s.alpha > 0);

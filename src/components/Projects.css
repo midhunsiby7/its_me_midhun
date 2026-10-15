@@ -2,6 +2,34 @@
   padding: 3.5rem 0 5rem;
 }
 
+@media (max-width: 600px) {
+  .projects {
+    padding-top: 2.5rem;
+  }
+
+  .projects__card-body {
+    padding: 1.15rem;
+  }
+
+  .projects__topline {
+    align-items: flex-start;
+    font-size: 0.62rem;
+  }
+
+  .projects__title {
+    font-size: 1.08rem;
+  }
+
+  .projects__desc {
+    font-size: 0.86rem;
+  }
+
+  .projects__link {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
 .projects__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -139,6 +167,12 @@
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+.projects__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 @media (max-width: 900px) {
