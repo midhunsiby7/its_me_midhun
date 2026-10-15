@@ -7,12 +7,15 @@
 }
 
 .showcase-card--achievement .showcase-card__media-container {
-  width: 7.5rem;
-  height: 5.5rem;
+  width: 100%;
+  height: clamp(12rem, 24vw, 15rem);
+  margin-bottom: 1.25rem;
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.showcase-card--achievement .showcase-card__image {
-  object-fit: contain;
+.showcase-card--achievement .showcase-card__header {
+  display: block;
 }
 
 .showcase-card:hover {

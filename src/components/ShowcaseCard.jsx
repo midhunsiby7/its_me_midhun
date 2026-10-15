@@ -37,7 +37,7 @@ function ShowcaseCard({ item, type }) {
       <div className="showcase-card__header">
         <div className="showcase-card__media-container">
           {image ? (
-            type === 'certificate' ? (
+            type === 'certificate' || type === 'achievement' ? (
               <button
                 type="button"
                 className="showcase-card__image-button"
@@ -96,7 +96,7 @@ function ShowcaseCard({ item, type }) {
           className="certificate-lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label={`${title} certificate preview`}
+          aria-label={`${title} ${type} preview`}
           onClick={() => setIsImageOpen(false)}
         >
           <div

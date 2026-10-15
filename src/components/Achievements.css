@@ -2,14 +2,9 @@
   padding: 3.5rem 0 5rem;
 }
 
-.achievements .showcase-grid {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-/* Inherits grid and empty state from Certificates.css, or duplicates them for encapsulation */
 .showcase-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   width: 100%;
 }
