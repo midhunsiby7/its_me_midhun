@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import constellationStars from '../data/constellationStars.json';
 import './Starfield.css';
 
 function Starfield() {
@@ -19,156 +20,52 @@ function Starfield() {
     };
 
     // ── Real constellation star data ──
-    // Each star: [RA_fraction, Dec_fraction, magnitude]
-    // RA_fraction = 0..1 across viewport width
-    // Dec_fraction = 0..1 across viewport height
-    // magnitude = visual brightness (lower = brighter)
-    const CONSTELLATION_STARS = {
-      // Orion — placed center-left, lower half
-      orion: [
-        [0.28, 0.42, 0.5],  // Betelgeuse (α Ori, mag 0.5)
-        [0.35, 0.42, 0.2],  // Rigel (β Ori, mag 0.2)
-        [0.30, 0.45, 1.6],  // Bellatrix (γ Ori)
-        [0.33, 0.45, 2.1],  // Saiph (κ Ori)
-        [0.31, 0.44, 1.7],  // Mintaka (δ Ori, belt)
-        [0.315, 0.443, 1.7], // Alnilam (ε Ori, belt)
-        [0.32, 0.446, 2.3], // Alnitak (ζ Ori, belt)
-        [0.305, 0.435, 3.4], // nebula region star
-      ],
-      // Gemini — above-right of Orion
-      gemini: [
-        [0.36, 0.30, 1.2],  // Pollux (β Gem)
-        [0.34, 0.28, 1.6],  // Castor (α Gem)
-        [0.35, 0.33, 3.0],
-        [0.37, 0.32, 2.9],
-        [0.33, 0.31, 3.2],
-        [0.355, 0.35, 3.5],
-      ],
-      // Canis Major — below Orion
-      canis_major: [
-        [0.30, 0.55, -1.5], // Sirius (α CMa, brightest star!)
-        [0.32, 0.58, 1.5],  // Adhara
-        [0.28, 0.57, 1.8],  // Wezen
-        [0.31, 0.60, 2.0],  // Aludra
-        [0.29, 0.56, 3.0],
-      ],
-      // Canis Minor — left of Gemini
-      canis_minor: [
-        [0.33, 0.38, 0.4],  // Procyon (α CMi)
-        [0.34, 0.39, 2.9],  // Gomeisa
-      ],
-      // Leo — upper-center area
-      leo: [
-        [0.50, 0.30, 1.4],  // Regulus (α Leo)
-        [0.55, 0.25, 2.0],  // Denebola (β Leo)
-        [0.52, 0.27, 2.1],  // Algieba (γ Leo)
-        [0.48, 0.28, 2.6],
-        [0.51, 0.32, 3.0],
-        [0.53, 0.29, 2.4],
-        [0.49, 0.26, 3.4],
-      ],
-      // Ursa Major (Big Dipper) — top-left
-      ursa_major: [
-        [0.12, 0.12, 1.8],  // Dubhe (α UMa)
-        [0.15, 0.11, 2.4],  // Merak (β UMa)
-        [0.17, 0.13, 2.4],  // Phecda (γ UMa)
-        [0.19, 0.11, 3.3],  // Megrez (δ UMa)
-        [0.21, 0.10, 1.8],  // Alioth (ε UMa)
-        [0.23, 0.09, 2.1],  // Mizar (ζ UMa)
-        [0.25, 0.08, 1.9],  // Alkaid (η UMa)
-      ],
-      // Cassiopeia — top area, W shape
-      cassiopeia: [
-        [0.42, 0.08, 2.2],  // Schedar (α Cas)
-        [0.44, 0.06, 2.3],  // Caph (β Cas)
-        [0.43, 0.09, 2.5],  // Tsih (γ Cas)
-        [0.45, 0.07, 2.7],  // Ruchbah (δ Cas)
-        [0.46, 0.09, 3.4],  // Segin (ε Cas)
-      ],
-      // Scorpius — lower-right
-      scorpius: [
-        [0.62, 0.65, 1.1],  // Antares (α Sco)
-        [0.60, 0.62, 2.3],
-        [0.64, 0.68, 2.6],
-        [0.65, 0.70, 2.9],
-        [0.63, 0.67, 3.0],
-        [0.61, 0.64, 2.8],
-      ],
-      // Lyra — upper area
-      lyra: [
-        [0.58, 0.15, 0.0],  // Vega (α Lyr, mag ~0)
-        [0.59, 0.17, 3.3],
-        [0.57, 0.16, 3.5],
-        [0.585, 0.18, 4.0],
-      ],
-      // Cygnus
-      cygnus: [
-        [0.55, 0.10, 1.3],  // Deneb (α Cyg)
-        [0.56, 0.13, 2.5],  // Sadr (γ Cyg)
-        [0.54, 0.12, 3.1],
-        [0.57, 0.11, 3.0],
-        [0.555, 0.15, 2.2],  // Albireo (β Cyg)
-      ],
+    // Coordinates use HYG J2000 right ascension and declination.
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const getStarColor = (colorIndex) => {
+      if (colorIndex <= 0) return '200, 220, 255';
+      if (colorIndex < 0.45) return '235, 240, 255';
+      if (colorIndex < 0.9) return '255, 250, 235';
+      if (colorIndex < 1.35) return '255, 225, 190';
+      return '255, 205, 170';
+    };
+
+    // Hammer-Aitoff projection keeps one coherent, full-sky J2000 layout.
+    const projectStar = (star, w, h) => {
+      const ra = (star.ra * Math.PI) / 12;
+      const dec = (star.dec * Math.PI) / 180;
+      const centerRa = Math.PI;
+      const lambda = Math.atan2(Math.sin(ra - centerRa), Math.cos(ra - centerRa));
+      const denominator = Math.sqrt(1 + Math.cos(dec) * Math.cos(lambda / 2));
+      const x = (2 * Math.cos(dec) * Math.sin(lambda / 2)) / denominator;
+      const y = Math.sin(dec) / denominator;
+
+      return {
+        x: w * 0.5 + x * w * 0.235,
+        y: h * 0.5 - y * h * 0.46,
+      };
     };
 
     const createStars = () => {
-      const s = [];
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. Constellation stars (accurate positions, proper brightness)
-      Object.values(CONSTELLATION_STARS).forEach(constellation => {
-        constellation.forEach(([rx, ry, mag]) => {
-          // Convert magnitude to visual radius: brighter = bigger
-          // mag range: -1.5 (Sirius) to 4.0 (faint)
-          const radius = Math.max(0.3, 2.2 - mag * 0.35);
-          const alpha = Math.min(1, Math.max(0.4, 1.1 - mag * 0.12));
-          // Color temperature: bright stars are slightly blue-white
-          const temp = mag < 1 ? 'bright' : (mag < 2.5 ? 'medium' : 'dim');
+      stars = constellationStars.map((star) => {
+        const position = projectStar(star, w, h);
+        const magnitude = Number(star.magnitude);
+        const radius = clamp(0.55 + (4.2 - magnitude) * 0.16, 0.45, 1.25);
+        const alpha = clamp(0.38 + (4.5 - magnitude) * 0.12, 0.38, 0.92);
 
-          s.push({
-            x: rx * w, y: ry * h,
-            radius, alpha, temp,
-            twinkleSpeed: 0.015 + Math.random() * 0.01,
-            twinkleOffset: Math.random() * Math.PI * 2,
-          });
-        });
-      });
-
-      // 2. Background field stars (tiny, numerous, realistic density)
-      const bgCount = Math.min(350, Math.floor(w * h / 5000));
-      for (let i = 0; i < bgCount; i++) {
-        s.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          radius: Math.random() * 0.5 + 0.15,
-          alpha: Math.random() * 0.25 + 0.05,
-          temp: 'dim',
-          twinkleSpeed: Math.random() * 0.02 + 0.005,
+        return {
+          ...position,
+          radius,
+          alpha,
+          color: getStarColor(Number(star.colorIndex ?? 0.45)),
+          twinkleSpeed: 0.008 + Math.random() * 0.008,
           twinkleOffset: Math.random() * Math.PI * 2,
-        });
-      }
-
-      // 3. Milky Way band — dense cluster of tiny dust stars (left side, tilted)
-      for (let i = 0; i < 300; i++) {
-        const bandX = Math.random() * w * 0.35;
-        const bandY = Math.random() * h;
-        const tiltedX = bandX + (bandY - h / 2) * 0.18;
-        // Gaussian-ish distribution across the band width
-        const scatter = (Math.random() + Math.random() + Math.random()) / 3;
-        const finalX = tiltedX + (scatter - 0.5) * w * 0.08;
-
-        s.push({
-          x: finalX, y: bandY,
-          radius: Math.random() * 0.25 + 0.05,
-          alpha: Math.random() * 0.08 + 0.01,
-          temp: 'milky',
-          twinkleSpeed: 0,
-          twinkleOffset: 0,
-        });
-      }
-
-      stars = s;
+        };
+      });
 
       blackHole = {
         x: w * 0.8, y: h * 0.25,
@@ -375,14 +272,6 @@ function Starfield() {
       drawAccretionDisk(bh, time, 'front');
     };
 
-    // ── Star rendering ──
-    const getStarColor = (temp, alpha) => {
-      if (temp === 'bright') return `rgba(200, 220, 255, ${alpha})`;   // blue-white
-      if (temp === 'medium') return `rgba(240, 235, 220, ${alpha})`;   // warm white
-      if (temp === 'milky') return `rgba(190, 185, 200, ${alpha})`;   // pale lavender
-      return `rgba(210, 215, 225, ${alpha})`;                          // neutral dim
-    };
-
     // ── Animation loop ──
     let time = 0;
     const animate = () => {
@@ -404,7 +293,7 @@ function Starfield() {
 
         ctx.beginPath();
         ctx.arc(lensed.x, lensed.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = getStarColor(star.temp, a);
+        ctx.fillStyle = `rgba(${star.color}, ${a})`;
         ctx.fill();
       });
 
