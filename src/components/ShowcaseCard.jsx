@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import './ShowcaseCard.css';
 
 function ShowcaseCard({ item, type }) {
   const { title, description, image, category, featured } = item;
+  const [isImageOpen, setIsImageOpen] = useState(false);
   
   // Map fields dynamically to support both schema types
   const subtitle = item.issuer || item.organization || item.platform;
@@ -9,17 +11,44 @@ function ShowcaseCard({ item, type }) {
   const primaryUrl = item.credentialUrl || item.link;
   const secondaryUrl = item.verificationUrl;
   const iconFallback = type === 'certificate' ? '📜' : '🏆';
+  const imageSrc = image
+    ? `${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`
+    : '';
+
+  useEffect(() => {
+    if (!isImageOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsImageOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [isImageOpen]);
   
   return (
     <div className={`showcase-card glass-card ${featured ? 'showcase-card--featured' : ''}`}>
       <div className="showcase-card__header">
         <div className="showcase-card__media-container">
           {image ? (
-            <img 
-              src={`${import.meta.env.BASE_URL}${image.startsWith('/') ? image.slice(1) : image}`} 
-              alt={title} 
-              className="showcase-card__image" 
-            />
+            type === 'certificate' ? (
+              <button
+                type="button"
+                className="showcase-card__image-button"
+                onClick={() => setIsImageOpen(true)}
+                aria-label={`Open ${title} for a closer look`}
+              >
+                <img src={imageSrc} alt={title} className="showcase-card__image" />
+                <span className="showcase-card__image-hint">Tap to enlarge</span>
+              </button>
+            ) : (
+              <img src={imageSrc} alt={title} className="showcase-card__image" />
+            )
           ) : (
             <span className="showcase-card__icon">{iconFallback}</span>
           )}
@@ -58,6 +87,32 @@ function ShowcaseCard({ item, type }) {
               Verify
             </a>
           )}
+        </div>
+      )}
+
+      {isImageOpen && (
+        <div
+          className="certificate-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${title} certificate preview`}
+          onClick={() => setIsImageOpen(false)}
+        >
+          <div
+            className="certificate-lightbox__content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="certificate-lightbox__close"
+              onClick={() => setIsImageOpen(false)}
+              aria-label="Close certificate preview"
+            >
+              ×
+            </button>
+            <img src={imageSrc} alt={title} className="certificate-lightbox__image" />
+            <p className="certificate-lightbox__caption">{title}</p>
+          </div>
         </div>
       )}
     </div>
