@@ -1,5 +1,24 @@
 .interests {
-  padding: 3rem 0;
+  padding: 3.5rem 0 5rem;
+}
+
+.interests__intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 580px;
+  margin: -0.5rem 0 2rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.interests__intro-mark {
+  color: var(--accent-cyan);
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding-top: 0.35rem;
 }
 
 .interests__grid {
@@ -9,8 +28,10 @@
 }
 
 .interests__card {
-  padding: 1.75rem 1.25rem;
-  text-align: center;
+  position: relative;
+  padding: 1.5rem;
+  text-align: left;
+  min-height: 210px;
 }
 
 .interests__icon-wrap {
@@ -20,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
+  margin: 0 0 1.1rem;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
   transition: all var(--transition-base);
@@ -32,7 +53,15 @@
 }
 
 .interests__icon { font-size: 1.5rem; }
-.interests__title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+.interests__index {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+}
+.interests__title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
 .interests__desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.65; }
 
 @media (max-width: 900px) {

@@ -1,5 +1,9 @@
 .achievements {
-  padding-bottom: 4rem;
+  padding: 3.5rem 0 5rem;
+}
+
+.achievements .showcase-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 /* Inherits grid and empty state from Certificates.css, or duplicates them for encapsulation */

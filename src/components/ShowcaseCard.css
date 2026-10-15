@@ -6,6 +6,15 @@
   transition: all var(--transition-base);
 }
 
+.showcase-card--achievement .showcase-card__media-container {
+  width: 7.5rem;
+  height: 5.5rem;
+}
+
+.showcase-card--achievement .showcase-card__image {
+  object-fit: contain;
+}
+
 .showcase-card:hover {
   /* Relying on .glass-card:hover for transform to keep it unified */
 }

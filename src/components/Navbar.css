@@ -98,6 +98,14 @@
   transition: all var(--transition-base);
 }
 
+.navbar__link:focus-visible,
+.navbar__cta:focus-visible,
+.navbar__logo:focus-visible,
+.navbar__hamburger:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
 .navbar__link:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.04);
@@ -153,7 +161,7 @@
 
   .navbar__links {
     position: fixed;
-    top: 70px;
+    top: 64px;
     right: 1rem;
     left: auto;
     bottom: auto;
@@ -207,5 +215,17 @@
     font-size: 0.95rem;
     text-align: center;
     border-radius: var(--radius-inner);
+  }
+}
+
+@media (max-width: 420px) {
+  .navbar__logo {
+    font-size: 1rem;
+  }
+
+  .navbar__links {
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
   }
 }

@@ -10,6 +10,7 @@ import Interests from './components/Interests';
 import Certificates from './components/Certificates';
 import Achievements from './components/Achievements';
 import Contact from './components/Contact';
+import Footer from './components/Footer';
 
 function App() {
   const [activePage, setActivePage] = useState('home');
@@ -232,6 +233,7 @@ function App() {
         <div className={`page-content ${transitioning ? 'page-exit' : 'page-active'}`}>
           {renderPage()}
         </div>
+        <Footer />
       </div>
     </div>
   );

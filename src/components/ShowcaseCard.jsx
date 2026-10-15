@@ -33,7 +33,7 @@ function ShowcaseCard({ item, type }) {
   }, [isImageOpen]);
   
   return (
-    <div className={`showcase-card glass-card ${type === 'certificate' ? 'showcase-card--certificate' : ''} ${featured ? 'showcase-card--featured' : ''}`}>
+    <div className={`showcase-card glass-card showcase-card--${type} ${featured ? 'showcase-card--featured' : ''}`}>
       <div className="showcase-card__header">
         <div className="showcase-card__media-container">
           {image ? (

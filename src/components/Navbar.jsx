@@ -30,29 +30,37 @@ function Navbar({ activePage, onNavigate }) {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" aria-label="Primary navigation">
       <div className="navbar__inner">
-        <button onClick={() => handleNav('home')} className="navbar__logo">
-          &lt;Midhun<span className="navbar__logo-b">/&gt;</span> <span style={{fontSize: '10px', opacity: 0.3}}>v7.1</span>
+        <button type="button" onClick={() => handleNav('home')} className="navbar__logo" aria-label="Go to home">
+          &lt;Midhun<span className="navbar__logo-b">/&gt;</span>
         </button>
 
         {/* Hamburger */}
-        <button className={`navbar__hamburger ${mobileOpen ? 'navbar__hamburger--open' : ''}`} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+        <button
+          type="button"
+          className={`navbar__hamburger ${mobileOpen ? 'navbar__hamburger--open' : ''}`}
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileOpen}
+          aria-controls="primary-navigation"
+        >
           <span></span><span></span><span></span>
         </button>
 
-        <div className={`navbar__links ${mobileOpen ? 'navbar__links--open' : ''}`}>
+        <div id="primary-navigation" className={`navbar__links ${mobileOpen ? 'navbar__links--open' : ''}`}>
           {navLinks.map((link) => (
             <button
               key={link.id}
               className={`navbar__link ${activePage === link.id ? 'navbar__link--active' : ''}`}
+              type="button"
               onClick={() => handleNav(link.id)}
             >
               {link.label}
               {activePage === link.id && <span className="navbar__indicator" />}
             </button>
           ))}
-          <button className="navbar__cta" onClick={() => handleNav('contact')}>
+          <button type="button" className="navbar__cta" onClick={() => handleNav('contact')}>
             Let's Talk
           </button>
         </div>

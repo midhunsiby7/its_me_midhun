@@ -12,8 +12,8 @@ function Contact({ onNavigate }) {
           Let's <span className="gradient-text">Connect</span>
         </h2>
         <p className="contact__subtitle reveal delay-2">
-          Whether you have a project idea, want to collaborate, or just want to say hello —
-          feel free to reach out!
+          Have a project idea, a technical question, or a collaboration in mind?
+          The easiest way to reach me is by email.
         </p>
 
         <div className="contact__cards reveal delay-3">
@@ -54,7 +54,14 @@ function Contact({ onNavigate }) {
           )}
         </div>
 
-        <button className="contact__back reveal delay-4" onClick={() => onNavigate('home')}>
+        {socials.email && (
+          <a className="contact__primary-action reveal delay-4" href={`mailto:${socials.email}`}>
+            <span>Start a conversation</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        )}
+
+        <button type="button" className="contact__back reveal delay-5" onClick={() => onNavigate('home')}>
           ← Back to Home
         </button>
       </div>
@@ -63,4 +70,3 @@ function Contact({ onNavigate }) {
 }
 
 export default Contact;
-

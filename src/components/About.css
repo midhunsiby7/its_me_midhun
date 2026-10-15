@@ -1,5 +1,5 @@
 .about {
-  padding: 3rem 0;
+  padding: 3.5rem 0 5rem;
 }
 
 .about__grid {
@@ -11,7 +11,7 @@
 
 .about__bio p {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin-bottom: 1.1rem;
   line-height: 1.9;
   font-weight: 400;
@@ -63,7 +63,7 @@
 .about__timeline-item:last-child .about__timeline-dot::after { display: none; }
 
 .about__timeline-content {
-  padding: 1rem 1.25rem;
+  padding: 1.15rem 1.25rem;
   flex: 1;
 }
 
@@ -123,6 +123,20 @@
   .about__grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  @media (max-width: 520px) {
+    .about__timeline-item {
+      gap: 0.65rem;
+    }
+
+    .about__timeline-content {
+      padding: 1rem;
+    }
+
+    .about__edu-header {
+      align-items: flex-start;
+    }
   }
   .about__bio p { font-size: 0.9rem; }
   .about__edu-logo { width: 42px; height: 42px; }

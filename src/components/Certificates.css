@@ -1,5 +1,5 @@
 .certificates {
-  padding-bottom: 4rem;
+  padding: 3.5rem 0 5rem;
 }
 
 .showcase-grid {
@@ -7,6 +7,10 @@
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
   width: 100%;
+}
+
+.certificates .showcase-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .empty-state {

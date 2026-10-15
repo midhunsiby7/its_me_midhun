@@ -18,6 +18,7 @@ function Hero({ onNavigate }) {
       <div className="hero__orb hero__orb--3"></div>
 
       <div className="hero__content">
+        <p className="hero__eyebrow">Software · Cloud · Hardware</p>
         {/* Photo + Name row */}
         <div className="hero__intro">
           <div className="hero__photo-wrap">
@@ -50,14 +51,12 @@ function Hero({ onNavigate }) {
           <span className="hero__cursor-blink">|</span>
         </div>
 
-        <p className="hero__desc">
-          {profile.description}
-        </p>
+        <p className="hero__desc">{profile.description}</p>
 
         {/* Quick stats */}
         <div className="hero__stats">
           {profile.stats.map(stat => (
-            <div key={stat.label} className="hero__stat glass-card">
+            <div key={stat.label} className="hero__stat">
               <span className="hero__stat-num">{stat.num}</span>
               <span className="hero__stat-label">{stat.label}</span>
             </div>
@@ -112,4 +111,3 @@ function Hero({ onNavigate }) {
 }
 
 export default Hero;
-

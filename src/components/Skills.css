@@ -1,5 +1,5 @@
 .skills {
-  padding: 3rem 0;
+  padding: 3.5rem 0 5rem;
 }
 
 .skills__grid {
@@ -9,7 +9,8 @@
 }
 
 .skills__card {
-  padding: var(--spacing-card);
+  padding: 1.35rem 1.5rem;
+  min-height: 170px;
 }
 .skills__card:hover {
   border-color: color-mix(in srgb, var(--card-accent) 20%, transparent);
@@ -35,7 +36,7 @@
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.skills__card-title { font-size: 0.95rem; font-weight: 500; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.95); }
+.skills__card-title { font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.95); }
 
 .skills__tags {
   display: flex;

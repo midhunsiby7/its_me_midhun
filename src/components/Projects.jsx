@@ -22,16 +22,34 @@ function Projects() {
             <div key={p.title} className={`projects__card glass-card reveal delay-${Math.min(i + 2, 6)}`}>
               <div className="projects__card-accent" style={{ background: PROJECT_GRADIENTS[i % PROJECT_GRADIENTS.length] }} />
               <div className="projects__card-body">
-                {p.image ? (
-                  <img src={`${import.meta.env.BASE_URL}${p.image.startsWith('/') ? p.image.slice(1) : p.image}`} alt={p.title} className="projects__thumbnail" />
-                ) : (
-                  <span className="projects__icon">{p.icon}</span>
-                )}
-                <h3 className="projects__title">{p.title}</h3>
+                <div className="projects__topline">
+                  <span className="projects__category">{p.category} · {p.type}</span>
+                  <span className="projects__year">{p.year}</span>
+                </div>
+                <div className="projects__heading">
+                  {p.image ? (
+                    <img src={`${import.meta.env.BASE_URL}${p.image.startsWith('/') ? p.image.slice(1) : p.image}`} alt="" className="projects__thumbnail" />
+                  ) : (
+                    <span className="projects__icon" aria-hidden="true">{p.icon}</span>
+                  )}
+                  <div>
+                    <h3 className="projects__title">{p.title}</h3>
+                    <p className="projects__subtitle">{p.subtitle}</p>
+                  </div>
+                </div>
                 <p className="projects__desc">{p.description}</p>
+                <div className="projects__status">
+                  <span className="projects__status-dot" />
+                  {p.status}
+                </div>
                 <div className="projects__tech">
                   {p.technologies.map((t) => <span key={t} className="projects__tech-tag">{t}</span>)}
                 </div>
+                {p.highlights?.length > 0 && (
+                  <ul className="projects__highlights">
+                    {p.highlights.slice(0, 3).map((highlight) => <li key={highlight}>{highlight}</li>)}
+                  </ul>
+                )}
                 <div className="projects__links">
                   {p.github && (
                     <a href={p.github} target="_blank" rel="noopener noreferrer" className="projects__link">
@@ -62,4 +80,3 @@ function Projects() {
 }
 
 export default Projects;
-

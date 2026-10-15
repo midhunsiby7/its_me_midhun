@@ -39,9 +39,33 @@
 .hero__content {
   position: relative;
   z-index: 1;
-  max-width: 700px;
+  max-width: 760px;
   text-align: center;
 }
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--accent-cyan);
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: all 0.6s var(--ease-out-expo) 0.1s;
+}
+
+.hero__eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.hero--loaded .hero__eyebrow { opacity: 1; }
 
 /* ===== PHOTO + NAME ROW ===== */
 .hero__intro {
@@ -176,10 +200,12 @@
 .hero--loaded .hero__stats { opacity: 1; }
 
 .hero__stat {
-  padding: 0.75rem 1.25rem;
+  padding: 0.25rem 1.25rem;
   text-align: center;
   min-width: 110px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
 }
+.hero__stat:first-child { border-left: 0; }
 .hero__stat:hover { transform: translateY(-3px); }
 
 .hero__stat-num {
@@ -322,6 +348,7 @@
   .hero__photo { width: 80px; height: 80px; }
 
   .hero__tagline { font-size: 0.75rem; flex-wrap: wrap; justify-content: center; }
+  .hero__eyebrow { font-size: 0.65rem; }
 
   .hero__stats { gap: 0.5rem; }
   .hero__stat { min-width: 85px; padding: 0.6rem 0.75rem; }
@@ -337,6 +364,7 @@
 @media (max-width: 400px) {
   .hero__name { font-size: 2rem; }
   .hero__photo { width: 70px; height: 70px; }
-  .hero__stats { flex-direction: column; gap: 0.4rem; }
-  .hero__stat { min-width: auto; width: 100%; }
+  .hero__stats { gap: 0.25rem; }
+  .hero__stat { min-width: 0; padding: 0.4rem 0.55rem; }
+  .hero__stat-label { letter-spacing: 0.5px; }
 }
