@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 import './ShowcaseCard.css';
 
@@ -32,7 +33,7 @@ function ShowcaseCard({ item, type }) {
   }, [isImageOpen]);
   
   return (
-    <div className={`showcase-card glass-card ${featured ? 'showcase-card--featured' : ''}`}>
+    <div className={`showcase-card glass-card ${type === 'certificate' ? 'showcase-card--certificate' : ''} ${featured ? 'showcase-card--featured' : ''}`}>
       <div className="showcase-card__header">
         <div className="showcase-card__media-container">
           {image ? (
@@ -90,7 +91,7 @@ function ShowcaseCard({ item, type }) {
         </div>
       )}
 
-      {isImageOpen && (
+      {isImageOpen && createPortal(
         <div
           className="certificate-lightbox"
           role="dialog"
@@ -110,10 +111,16 @@ function ShowcaseCard({ item, type }) {
             >
               ×
             </button>
-            <img src={imageSrc} alt={title} className="certificate-lightbox__image" />
+            <img
+              src={imageSrc}
+              alt={title}
+              className="certificate-lightbox__image"
+              onClick={() => setIsImageOpen(false)}
+            />
             <p className="certificate-lightbox__caption">{title}</p>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

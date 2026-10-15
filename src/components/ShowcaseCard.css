@@ -37,10 +37,22 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.showcase-card--certificate .showcase-card__header {
+  display: block;
+}
+
+.showcase-card--certificate .showcase-card__media-container {
+  width: 100%;
+  height: clamp(12rem, 24vw, 15rem);
+  margin-bottom: 1.25rem;
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .showcase-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: calc(var(--radius-inner) - 4px);
 }
 
@@ -252,6 +264,7 @@
   object-fit: contain;
   border-radius: 0.75rem;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  cursor: zoom-out;
 }
 
 .certificate-lightbox__close {
