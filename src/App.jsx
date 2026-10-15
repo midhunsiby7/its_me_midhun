@@ -17,7 +17,6 @@ function App() {
   const [displayPage, setDisplayPage] = useState('home');
   const craftRef = useRef(null);
   const glowRef = useRef(null);
-  const trailsRef = useRef([]);
   const pageRef = useRef(null);
 
   const handleNavigate = useCallback((page) => {

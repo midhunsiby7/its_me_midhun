@@ -207,7 +207,6 @@ function Starfield() {
 
       // Schwarzschild-inspired deflection
       const rs = bh.radius * 2.0;
-      const u = 1.0 / dist;
       // From the geodesic ODE: deflection ≈ Rs/b + 15π/16 * (Rs/b)² + ...
       const impact = dist / rs;
       const deflection = rs / (dist * impact) * (1 + 0.9375 / impact);
